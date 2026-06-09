@@ -172,15 +172,17 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ⚠️⚠️⚠️ CONFIGURACIÓN DE FIREBASE ⚠️⚠️⚠️
-    // PEGA AQUÍ TUS DATOS DE FIREBASE
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY_AQUI",
-      authDomain: "TU_AUTH_DOMAIN_AQUI",
-      projectId: "TU_PROJECT_ID_AQUI",
-      storageBucket: "TU_STORAGE_BUCKET_AQUI",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID_AQUI",
-      appId: "TU_APP_ID_AQUI"
+    
+    
+const firebaseConfig = {
+  apiKey: "AIzaSyBPdQbNkhhKPFmf1kU3wE8-kXkl7O5-NMc",
+  authDomain: "ecosdemoda-b85a9.firebaseapp.com",
+  projectId: "ecosdemoda-b85a9",
+  storageBucket: "ecosdemoda-b85a9.firebasestorage.app",
+  messagingSenderId: "683006779672",
+  appId: "1:683006779672:web:d2eca01626dbc780c43e6d",
+  measurementId: "G-WMP28WN1JG"
+};
     };
 
     const app = initializeApp(firebaseConfig);
