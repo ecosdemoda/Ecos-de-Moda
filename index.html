@@ -88,13 +88,10 @@
   </main>
   <footer class="py-10 px-6 text-center" style="background:var(--fg)"><p id="footerName" class="font-display text-white text-xl font-bold mb-2">Ecos de Moda</p></footer>
 
-  <!-- MODAL CARRITO -->
   <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="font-display text-2xl font-bold" style="color:var(--fg)">Mi Carrito</h3><button type="button" onclick="window.closeAllModals()" class="text-drift hover:text-charcoal text-xl"><i class="fas fa-times"></i></button></div><div id="cartItems" class="space-y-4 mb-6"></div><div id="checkoutForm" class="space-y-4 border-t border-sand pt-6 hidden"><h4 class="font-bold text-lg">Datos de Envío</h4><input type="text" id="checkName" placeholder="Tu nombre completo" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><input type="text" id="checkAddress" placeholder="Dirección de entrega" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><select id="checkPayment" class="w-full px-4 py-3 rounded-xl border border-sand outline-none bg-white focus:border-fuchsia"><option value="Efectivo">Pago en Efectivo</option><option value="Transferencia">Pago por Transferencia</option></select><textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="w-full px-4 py-3 rounded-xl border border-sand outline-none resize-none focus:border-fuchsia"></textarea><p class="text-xs text-drift italic"><i class="fas fa-truck mr-1"></i> La mensajería se cobra aparte o puede recogerlo en nuestra tienda.</p><button type="button" id="sendWhatsapp" class="w-full py-4 rounded-xl font-bold text-white text-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-2xl"></i> Enviar Pedido por WhatsApp</button></div></div></div>
 
-  <!-- MODAL LOGIN -->
   <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-8 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold mb-4 text-center" style="color:var(--fg)">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Email"><input id="loginPass" type="password" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p><button type="button" id="loginBtn" class="w-full py-4 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Iniciar Sesión</button><button type="button" onclick="window.closeAllModals()" class="w-full py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div>
 
-  <!-- PANEL ADMIN -->
   <div id="adminModal" class="modal-overlay"><div class="modal-box bg-admin text-white flex flex-col md:rounded-2xl shadow-2xl" style="max-width:1000px;width:100%;height:100vh;max-height:100vh;margin:0;"><header class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0"><h2 class="font-display text-xl font-bold text-fuchsia">Panel de Administración</h2><button type="button" onclick="window.closeAllModals()" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center transition"><i class="fas fa-times text-xl"></i></button></header><div class="flex flex-wrap gap-2 p-4 border-b border-gray-700 shrink-0 bg-adminCard/50"><button type="button" onclick="window.showAdminPage('dashboard')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="dashboard"><i class="fas fa-chart-bar mr-1"></i> Inicio</button><button type="button" onclick="window.showAdminPage('sections')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="sections"><i class="fas fa-layer-group mr-1"></i> Secciones</button><button type="button" onclick="window.showAdminPage('products')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="products"><i class="fas fa-boxes-stacked mr-1"></i> Productos</button><button type="button" onclick="window.showAdminPage('appearance')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="appearance"><i class="fas fa-palette mr-1"></i> Apariencia</button><button type="button" onclick="window.showAdminPage('settings')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="settings"><i class="fas fa-cog mr-1"></i> Config</button></div><div id="adminContent" class="flex-1 overflow-y-auto admin-scroll p-8 md:p-10"></div><footer class="p-4 border-t border-gray-700 shrink-0"><button type="button" id="adminLogout" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl hover:bg-red-900/30 text-red-400 text-lg font-bold transition"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button></footer></div></div>
 
   <div id="toast" class="toast"></div>
@@ -114,32 +111,57 @@
       backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
       whatsappNumber: '53000000', exchangeRate: 300,
       sections: [
-        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, quantity: 15, image: 'https://picsum.photos/seed/vela01/400/400' }, { id: 2, name: 'Chocolates', price: 15.50, quantity: 8, image: 'https://picsum.photos/seed/choco02/400/400' } ] },
-        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 3, name: 'Set de Copas', price: 25.00, quantity: 3, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
+        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, quantity: 15, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
+        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', price: 25.00, quantity: 3, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
       ]
     };
 
-    /* ========== INTERSECTION OBSERVER ========== */
     let revealObserver = null;
     function setupRevealObserver() { if (revealObserver) revealObserver.disconnect(); revealObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }); }, { threshold: 0.1 }); document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el)); }
     function refreshReveals() { requestAnimationFrame(() => setupRevealObserver()); }
 
-    /* ========== FIRESTORE ========== */
-    function initDatabase() { onSnapshot(doc(db, "store", "data"), (d) => { if (d.exists()) { storeData = d.data(); if (!storeData.sections) storeData.sections = []; } else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); } applyAppearance(); renderCatalog(); if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); }); }
-    async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error al guardar', 'error'); } }
+    function initDatabase() { 
+      onSnapshot(doc(db, "store", "data"), (d) => { 
+        if (d.exists()) { 
+          storeData = d.data(); 
+          if (!storeData.sections) storeData.sections = []; 
+          // VALIDACIÓN CRÍTICA: Asegurar que cada sección tenga su array de productos
+          storeData.sections.forEach(s => { if (!s.products) s.products = []; });
+        } else { 
+          storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
+          saveData(); 
+        } 
+        applyAppearance(); 
+        renderCatalog(); 
+        if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); 
+      }, (error) => {
+        console.error("Error al leer Firebase:", error);
+        showToast('Error de conexión con la base de datos', 'error');
+      }); 
+    }
+    
+    async function saveData() { 
+      try { 
+        // Limpiar datos undefined antes de guardar para evitar errores en Firestore
+        const cleanData = JSON.parse(JSON.stringify(storeData));
+        await setDoc(doc(db, "store", "data"), cleanData); 
+      } catch (e) { 
+        console.error("Error al guardar:", e);
+        if (e.message.includes("maximum size")) {
+          showToast('Error: Documento muy grande. Usa imágenes más ligeras.', 'error');
+        } else {
+          showToast('Error al guardar cambios', 'error'); 
+        }
+      } 
+    }
 
-    /* ========== AUTH ========== */
     function initAuth() { onAuthStateChanged(auth, (u) => { isLoggedIn = !!u; updateAdminFab(); }); }
     async function handleLogin() { try { await signInWithEmailAndPassword(auth, document.getElementById('loginUser').value, document.getElementById('loginPass').value); closeAllModals(); openAdminPanel('dashboard'); } catch (e) { document.getElementById('loginError').classList.remove('hidden'); } }
     async function handleLogout() { await signOut(auth); closeAllModals(); }
 
-    /* ========== APARIENCIA Y PRECIOS ========== */
     function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor); document.documentElement.style.setProperty('--fg', storeData.headerColor); document.documentElement.style.setProperty('--accent', storeData.accentColor); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName; document.getElementById('heroTitle').textContent = storeData.heroTitle; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle; document.getElementById('footerName').textContent = storeData.storeName; }
     function formatPrice(p) { return `${p.toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(p * (storeData.exchangeRate || 300)).toLocaleString()} CUP</span>`; }
 
-    /* ========== SISTEMA DE IMÁGENES EN MEMORIA (BASE64) ========== */
-    // Evita bloqueos de red, no requiere configurar Firebase Storage. 
-    // Comprime la imagen y la guarda directo en Firestore.
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -149,10 +171,9 @@
           img.onerror = () => reject('La imagen está corrupta');
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 400;
-            const MAX_HEIGHT = 400;
-            let width = img.width;
-            let height = img.height;
+            const MAX_WIDTH = 300; // Reducido de 400 a 300 para guardar espacio en Firestore
+            const MAX_HEIGHT = 300;
+            let width = img.width, height = img.height;
 
             if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
             else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
@@ -162,8 +183,8 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convertir a JPEG calidad 0.6 para que ocupe poco espacio en Firestore (aprox 30-60KB)
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            // Calidad 0.5 para que pese aún menos y no rompa el límite de Firestore
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
             resolve(dataUrl);
           };
           img.src = event.target.result;
@@ -172,57 +193,66 @@
       });
     }
 
-    /* ========== CATÁLOGO ========== */
     function renderCatalog() { 
-      const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
-      let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
-      secs.forEach((s, i) => { tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon} mr-1"></i>${s.name}</button>`; }); 
-      tC.innerHTML = tH; 
-      let pH = ''; 
-      const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); 
-      showS.forEach(s => { 
-        if (!s || !s.products) return; 
-        if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon} mr-2" style="color:var(--accent)"></i>${s.name}</h3></div>`; 
-        s.products.forEach(p => { 
-          const qty = p.quantity !== undefined ? p.quantity : 10; // Retrocompatibilidad
-          const isAvailable = qty > 0;
-          pH += `
-            <article class="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-sand/50 flex flex-col">
-              <div class="overflow-hidden h-56 bg-sand/20">
-                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
-              </div>
-              <div class="p-5 flex flex-col flex-grow">
-                <h4 class="font-display text-lg font-bold mb-1" style="color:var(--fg)">${p.name}</h4>
-                <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">
-                  ${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disponibles: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}
-                </p>
-                <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price)}</p>
-                <div class="mt-auto">
-                  ${isAvailable 
-                    ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button>`
-                    : `<button type="button" disabled class="w-full py-3 rounded-xl font-bold text-white bg-gray-400 cursor-not-allowed text-base">Agotado</button>`
-                  }
-                </div>
-              </div>
-            </article>`; 
+      try {
+        const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
+        let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
+        secs.forEach((s, i) => { 
+          if(!s) return;
+          tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon || 'fas fa-gift'} mr-1"></i>${s.name || 'Sin nombre'}</button>`; 
         }); 
-      }); 
-      gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos.</p>'; 
-      refreshReveals(); 
+        tC.innerHTML = tH; 
+        
+        let pH = ''; 
+        const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); 
+        showS.forEach(s => { 
+          if (!s || !s.products) return; 
+          if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon || ''} mr-2" style="color:var(--accent)"></i>${s.name || ''}</h3></div>`; 
+          s.products.forEach(p => { 
+            if(!p) return;
+            const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; 
+            const isAvailable = qty > 0;
+            const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
+            pH += `
+              <article class="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-sand/50 flex flex-col">
+                <div class="overflow-hidden h-56 bg-sand/20">
+                  <img src="${imgSrc}" alt="${p.name || 'Producto'}" class="w-full h-full object-cover" loading="lazy">
+                </div>
+                <div class="p-5 flex flex-col flex-grow">
+                  <h4 class="font-display text-lg font-bold mb-1" style="color:var(--fg)">${p.name || 'Sin nombre'}</h4>
+                  <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">
+                    ${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disponibles: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}
+                  </p>
+                  <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price || 0)}</p>
+                  <div class="mt-auto">
+                    ${isAvailable 
+                      ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button>`
+                      : `<button type="button" disabled class="w-full py-3 rounded-xl font-bold text-white bg-gray-400 cursor-not-allowed text-base">Agotado</button>`
+                    }
+                  </div>
+                </div>
+              </article>`; 
+          }); 
+        }); 
+        gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos disponibles.</p>'; 
+        refreshReveals(); 
+      } catch(e) {
+        console.error("Error al renderizar catálogo:", e);
+        document.getElementById('productGrid').innerHTML = '<p class="col-span-full text-center text-red-500 py-12">Error al mostrar productos. Revisa la consola.</p>';
+      }
     }
+    
     function setActiveTab(i) { activeSectionTab = i; renderCatalog(); }
 
-    /* ========== CARRITO ========== */
     function addToCart(sId, pId) { 
-      const s = storeData.sections.find(x => x.id === sId), p = s.products.find(x => x.id === pId);
-      const qty = p.quantity !== undefined ? p.quantity : 10;
+      const s = storeData.sections.find(x => x.id === sId); 
+      if(!s) return;
+      const p = s.products.find(x => x.id === pId); 
+      if(!p) return;
+      const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10;
       const currentInCart = cart.find(x => x.id === pId)?.quantity || 0;
 
-      if (currentInCart >= qty) {
-        showToast('No hay más unidades disponibles', 'error');
-        return;
-      }
-
+      if (currentInCart >= qty) { showToast('No hay más unidades disponibles', 'error'); return; }
       const e = cart.find(x => x.id === pId); 
       if (e) e.quantity++; 
       else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); 
@@ -232,7 +262,7 @@
     function removeFromCart(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     function updateQuantity(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
+    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
     
     function sendWhatsappOrder() { 
       const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
@@ -242,91 +272,62 @@
       msg += `\n📦 *Productos:*\n`; 
       let total = 0; 
       cart.forEach(i => { 
-        const sub = i.price * i.quantity; 
-        total += sub; 
+        const sub = i.price * i.quantity; total += sub; 
         msg += `  • ${i.name} x${i.quantity} — ${sub.toFixed(2)} USD\n`; 
-        
-        // DESCONTAR INVENTARIO AUTOMÁTICAMENTE AL HACER EL PEDIDO
-        for(let s of storeData.sections) {
-          const p = s.products.find(x => x.id === i.id);
-          if(p) {
-            const currentQty = p.quantity !== undefined ? p.quantity : 10;
-            p.quantity = Math.max(0, currentQty - i.quantity);
-          }
-        }
+        for(let s of storeData.sections) { 
+          const p = s.products.find(x => x.id === i.id); 
+          if(p) { const currentQty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; p.quantity = Math.max(0, currentQty - i.quantity); } 
+        } 
       }); 
       msg += `\n💰 *Total: ${total.toFixed(2)} USD | ${Math.round(total * (storeData.exchangeRate || 300)).toLocaleString()} CUP*`; 
-      
-      // Guardar el inventario actualizado en Firebase
-      saveData();
-      
+      saveData(); 
       const phone = (storeData.whatsappNumber || '').replace(/[^0-9]/g, ''); 
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
-      
-      // Vaciar carrito
-      cart = []; 
-      updateCartBadge(); 
-      closeAllModals();
+      cart = []; updateCartBadge(); closeAllModals(); 
     }
 
-    /* ========== MODALES Y UTILIDADES ========== */
     function openModal(id) { document.getElementById(id).classList.add('visible'); if (id === 'cartModal') renderCartModal(); }
     function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('visible')); }
     function openAdminPanel(page) { openModal('adminModal'); window.showAdminPage(page); }
     let toastTimer; function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + type; clearTimeout(toastTimer); setTimeout(() => t.classList.add('show'), 10); toastTimer = setTimeout(() => t.classList.remove('show'), 3500); }
     function updateAdminFab() { document.getElementById('adminFab').innerHTML = isLoggedIn ? '<i class="fas fa-unlock text-fuchsia"></i>' : '<i class="fas fa-lock"></i>'; }
 
-    /* ====================================================
-       PANEL DE ADMINISTRACIÓN
-       ==================================================== */
     function showAdminPage(pg) { currentAdminPage = pg; editingSectionId = null; editingProductId = null; document.querySelectorAll('.admin-tab').forEach(b => { const isActive = b.dataset.page === pg; b.classList.toggle('bg-fuchsia/20', isActive); b.classList.toggle('text-fuchsia', isActive); b.classList.toggle('text-gray-300', !isActive); }); const content = document.getElementById('adminContent'); if (pg === 'dashboard') renderDashboard(content); else if (pg === 'sections') renderSectionList(content); else if (pg === 'products') renderProductList(content); else if (pg === 'appearance') renderAppearance(content); else if (pg === 'settings') renderSettings(content); }
 
-    function renderDashboard(el) { let t = 0; storeData.sections.forEach(s => t += s.products.length); el.innerHTML = `<div class="grid grid-cols-2 gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Secciones</p><p class="text-3xl font-bold text-fuchsia">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Productos</p><p class="text-3xl font-bold">${t}</p></div></div>`; }
+    function renderDashboard(el) { let t = 0; storeData.sections.forEach(s => t += (s.products || []).length); el.innerHTML = `<div class="grid grid-cols-2 gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Secciones</p><p class="text-3xl font-bold text-fuchsia">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Productos</p><p class="text-3xl font-bold">${t}</p></div></div>`; }
 
-    /* --- SECCIONES --- */
-    function renderSectionList(el) { let l = ''; storeData.sections.forEach(s => { l += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon} text-fuchsia text-xl"></i><span class="font-bold text-lg">${s.name}</span></div><div class="flex gap-2 w-full sm:w-auto"><button type="button" onclick="window.renderSectionForm(${s.id})" class="flex-1 py-3 rounded-lg bg-gray-700 font-bold text-center">Editar</button><button type="button" onclick="window.deleteSection(${s.id})" class="flex-1 py-3 rounded-lg bg-red-900/30 text-red-400 font-bold text-center">Eliminar</button></div></div>`; }); el.innerHTML = `<div class="mb-6"><button type="button" onclick="window.renderSectionForm(null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-4">${l}</div>`; }
+    function renderSectionList(el) { let l = ''; storeData.sections.forEach(s => { l += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon || 'fas fa-gift'} text-fuchsia text-xl"></i><span class="font-bold text-lg">${s.name || 'Sin nombre'}</span></div><div class="flex gap-2 w-full sm:w-auto"><button type="button" onclick="window.renderSectionForm(${s.id})" class="flex-1 py-3 rounded-lg bg-gray-700 font-bold text-center">Editar</button><button type="button" onclick="window.deleteSection(${s.id})" class="flex-1 py-3 rounded-lg bg-red-900/30 text-red-400 font-bold text-center">Eliminar</button></div></div>`; }); el.innerHTML = `<div class="mb-6"><button type="button" onclick="window.renderSectionForm(null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-4">${l}</div>`; }
     window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === id) : null; const content = document.getElementById('adminContent'); content.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-2xl font-bold mb-6">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="max-w-md space-y-4"><div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><button type="button" onclick="window.saveSection()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar</button></div>`; document.getElementById('sf_name').focus(); };
-    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === editingSectionId); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Guardado', 'success'); window.showAdminPage('sections'); };
-    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección?')) return; storeData.sections = storeData.sections.filter(x => x.id !== id); await saveData(); window.showAdminPage('sections'); };
+    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === editingSectionId); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); };
+    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== id); await saveData(); window.showAdminPage('sections'); };
 
-    /* --- PRODUCTOS --- */
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; sec.products.forEach(p => { const qty = p.quantity !== undefined ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
+    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price || 0)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
 
     window.renderProductForm = function(secId, prodId) {
       editingProductSectionId = secId; editingProductId = prodId;
       const s = storeData.sections.find(x => x.id === secId);
       const p = prodId ? s?.products.find(x => x.id === prodId) : null;
-      const qty = p ? (p.quantity !== undefined ? p.quantity : 10) : 10;
+      const qty = p ? (p.quantity !== undefined && p.quantity !== null ? p.quantity : 10) : 10;
       const content = document.getElementById('adminContent');
       content.innerHTML = `
         <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button>
-        <h3 class="font-display text-2xl font-bold mb-6">${p ? 'Editar' : 'Nuevo'} Producto <span class="text-sm text-gray-400 font-normal">en ${s.name}</span></h3>
+        <h3 class="font-display text-2xl font-bold mb-6">${p ? 'Editar' : 'Nuevo'} Producto <span class="text-sm text-gray-400 font-normal">en ${s.name || ''}</span></h3>
         <div class="max-w-md space-y-4">
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Nombre *</label>
-            <input id="pf_name" type="text" value="${p ? p.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
-          </div>
+          <div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="pf_name" type="text" value="${p ? p.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm text-gray-400 mb-1">Precio (USD) *</label>
-              <input id="pf_price" type="text" value="${p ? p.price : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
-            </div>
-            <div>
-              <label class="block text-sm text-gray-400 mb-1">Cantidad / Stock *</label>
-              <input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
-            </div>
+            <div><label class="block text-sm text-gray-400 mb-1">Precio (USD) *</label><input id="pf_price" type="text" value="${p ? p.price : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
+            <div><label class="block text-sm text-gray-400 mb-1">Cantidad / Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
           </div>
           <div>
             <label class="block text-sm text-gray-400 mb-1">Imagen</label>
             <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-40 object-contain rounded-xl mb-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
             <input id="pf_file" type="file" accept="image/*" class="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
             <input id="pf_image_url" type="hidden" value="${p ? p.image : ''}">
-            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Se comprimirá automáticamente para guardar espacio.</p>
+            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Se comprimirá automáticamente para no romper la base de datos.</p>
           </div>
           <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar Producto</button>
         </div>`;
       
-      // Previsualizar imagen localmente antes de guardar
       setTimeout(() => {
         const fileInput = document.getElementById('pf_file');
         if(fileInput) {
@@ -334,10 +335,7 @@
             const file = e.target.files[0];
             if (file) {
               const reader = new FileReader();
-              reader.onload = (ev) => {
-                document.getElementById('pf_img_preview').src = ev.target.result;
-                document.getElementById('pf_img_preview').classList.remove('hidden');
-              };
+              reader.onload = (ev) => { document.getElementById('pf_img_preview').src = ev.target.result; document.getElementById('pf_img_preview').classList.remove('hidden'); };
               reader.readAsDataURL(file);
             }
           };
@@ -358,7 +356,6 @@
 
       let imageUrl = document.getElementById('pf_image_url').value;
 
-      // Si seleccionó un archivo nuevo, comprimir y preparar
       if (file) {
         btn.disabled = true; 
         btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando imagen...';
@@ -375,7 +372,8 @@
       }
 
       const s = storeData.sections.find(x => x.id === editingProductSectionId);
-      if (!s) return;
+      if (!s) { showToast('Error: Sección no encontrada', 'error'); return; }
+      if (!s.products) s.products = []; // Seguridad extra
 
       if (editingProductId) {
         const p = s.products.find(x => x.id === editingProductId);
@@ -385,45 +383,29 @@
       }
       
       await saveData();
-      showToast('Producto guardado', 'success');
+      showToast('Producto guardado en la base de datos', 'success');
       window.showAdminPage('products');
+      renderCatalog(); // Forzar renderizado del catálogo público al mismo tiempo
     };
 
     window.deleteProduct = async function(secId, prodId) {
       if (!confirm('¿Eliminar este producto?')) return;
       const s = storeData.sections.find(x => x.id === secId);
-      s.products = s.products.filter(x => x.id !== prodId);
-      await saveData();
-      showToast('Producto eliminado', 'success');
-      renderProductList(document.getElementById('adminContent'));
+      if (s && s.products) {
+        s.products = s.products.filter(x => x.id !== prodId);
+        await saveData();
+        showToast('Producto eliminado', 'success');
+        renderProductList(document.getElementById('adminContent'));
+        renderCatalog(); // Actualizar vista pública
+      }
     };
 
-    /* --- APARIENCIA --- */
-    function renderAppearance(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
+    function renderAppearance(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
     window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; await saveData(); showToast('Guardado', 'success'); };
 
-    /* --- CONFIGURACIÓN --- */
-    function renderSettings(el) {
-      el.innerHTML = `
-        <div class="max-w-2xl space-y-6">
-          <div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5">
-            <h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3>
-            <div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
-            <div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
-          </div>
-          <button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar Configuración</button>
-        </div>`;
-    }
+    function renderSettings(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div></div><button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar Configuración</button></div>`; }
+    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = parseInt(document.getElementById('st_exchange').value) || 300; await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); };
 
-    window.saveSettings = async function() {
-      storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim();
-      storeData.exchangeRate = parseInt(document.getElementById('st_exchange').value) || 300;
-      await saveData();
-      showToast('Configuración guardada', 'success');
-      renderCatalog();
-    };
-
-    /* ========== EXPONER Y ARRANCAR ========== */
     window.setActiveTab = setActiveTab; window.addToCart = addToCart; window.removeFromCart = removeFromCart; window.updateQuantity = updateQuantity; window.showAdminPage = showAdminPage; window.openAdminPanel = openAdminPanel; window.closeAllModals = closeAllModals;
 
     document.addEventListener('DOMContentLoaded', () => {
