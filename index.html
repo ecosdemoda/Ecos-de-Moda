@@ -97,16 +97,16 @@
       </div>
     </div>
   </div>
-
   <!-- MODALS ADMIN -->
   <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-8 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold text-bark mb-4 text-center">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg" placeholder="Email"><input id="loginPass" type="password" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p><button id="loginBtn" class="w-full py-4 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Iniciar Sesión</button><button id="loginCancel" class="w-full py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div>
-  <div id="productModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><h3 id="productModalTitle" class="font-display text-2xl font-bold text-bark mb-6">Producto</h3><input type="hidden" id="pm_sectionId"><input type="hidden" id="pm_productId"><div class="space-y-4"><div><label class="block text-sm font-bold text-bark mb-1">Nombre</label><input id="pm_name" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div><label class="block text-sm font-bold text-bark mb-1">Precio (USD)</label><input id="pm_price" type="number" step="0.01" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div><label class="block text-sm font-bold text-bark mb-2">Imagen (URL)</label><input id="pm_imageUrl" type="url" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div id="pm_preview" class="w-full h-48 rounded-xl bg-sand/20 border-2 border-dashed border-sand flex items-center justify-center overflow-hidden"><span class="text-drift text-sm">Vista previa</span></div><div class="flex gap-3 pt-2"><button id="pm_save" class="flex-1 py-4 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button><button id="pm_cancel" class="flex-1 py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div></div>
+  <div id="productModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold text-bark mb-6">Producto</h3><input type="hidden" id="pm_sectionId"><input type="hidden" id="pm_productId"><div class="space-y-4"><div><label class="block text-sm font-bold text-bark mb-1">Nombre</label><input id="pm_name" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div><label class="block text-sm font-bold text-bark mb-1">Precio (USD)</label><input id="pm_price" type="number" step="0.01" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div><label class="block text-sm font-bold text-bark mb-2">Imagen (URL)</label><input id="pm_imageUrl" type="url" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div class="flex gap-3 pt-2"><button id="pm_save" class="flex-1 py-4 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button><button id="pm_cancel" class="flex-1 py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div></div>
   <div id="sectionModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold text-bark mb-6">Sección</h3><input type="hidden" id="sm_sectionId"><div class="space-y-4"><div><label class="block text-sm font-bold text-bark mb-1">Nombre</label><input id="sm_name" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div><div><label class="block text-sm font-bold text-bark mb-1">Icono</label><input id="sm_icon" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="fas fa-gift"></div><div class="flex gap-3 pt-2"><button id="sm_save" class="flex-1 py-4 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button><button id="sm_cancel" class="flex-1 py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div></div>
 
-  <!-- PANEL ADMIN (OCULTO POR DEFECTO) -->
-  <div id="adminPanel" class="fixed inset-0 z-[1050] bg-admin flex transform translate-x-full transition-transform duration-300 pointer-events-none">
+  <!-- PANEL ADMIN - ESTRUCTURA TOTALMENTE NUEVA -->
+  <div id="adminPanel" class="fixed inset-0 z-[1050] bg-admin flex transform translate-x-full transition-transform duration-300 ease-in-out pointer-events-none">
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="window.closeAdminSidebar()"></div>
-    <aside id="adminSidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-admin border-r border-gray-800 flex flex-col shrink-0 h-screen overflow-y-auto admin-scroll z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+    
+    <aside id="adminSidebar" class="w-72 bg-admin border-r border-gray-800 flex flex-col shrink-0 h-screen overflow-y-auto admin-scroll absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 z-50">
       <div class="p-6 border-b border-gray-800 flex justify-between items-center"><h2 class="font-display text-xl font-bold text-fuchsia">Admin</h2><button onclick="window.closeAdminSidebar()" class="md:hidden text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
       <nav class="flex-1 p-4 space-y-2">
         <button onclick="window.showAdminPage('dashboard'); window.closeAdminSidebar()" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-gray-800 text-gray-300 text-lg" data-page="dashboard"><i class="fas fa-chart-bar w-6 text-center"></i> Dashboard</button>
@@ -117,11 +117,13 @@
       </nav>
       <div class="p-4 border-t border-gray-800"><button id="adminLogout" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-red-900/30 text-red-400 text-lg"><i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión</button></div>
     </aside>
-    <div class="flex-1 h-screen overflow-y-auto admin-scroll md:ml-72">
+    
+    <div class="flex-1 h-screen overflow-y-auto admin-scroll bg-admin text-white">
       <header class="sticky top-0 bg-admin/95 backdrop-blur border-b border-gray-800 px-6 py-4 flex justify-between items-center z-10"><div class="flex items-center gap-4"><button id="adminMenuToggle" class="md:hidden w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center"><i class="fas fa-bars text-xl"></i></button><h2 id="adminPageTitle" class="font-display text-xl font-bold">Dashboard</h2></div><button id="adminClose" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center"><i class="fas fa-times text-xl"></i></button></header>
       <div id="adminContent" class="p-6 md:p-8"></div>
     </div>
   </div>
+
   <div id="toast" class="toast"></div>
 
   <script type="module">
@@ -135,7 +137,7 @@
     let storeData = { sections: [] }, isLoggedIn = false, currentAdminPage = 'dashboard', activeSectionTab = 0, adminSelectedSection = 0, cart = [];
     const DEFAULT_DATA = { storeName: 'Ecos de Moda', heroSubtitle: 'Tienda de Regalos', heroTitle: 'Ecos de Moda', backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C', whatsappNumber: '53000000', exchangeRate: 300, sections: [ { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, image: 'https://picsum.photos/seed/vela01/400/400' }, { id: 2, name: 'Chocolates', price: 15.50, image: 'https://picsum.photos/seed/choco02/400/400' } ] }, { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 3, name: 'Set de Copas', price: 25.00, image: 'https://picsum.photos/seed/copas05/400/400' } ] } ] };
 
-    function initDatabase() { onSnapshot(doc(db, "store", "data"), (d) => { if (d.exists()) { storeData = d.data(); if (!storeData.sections) storeData.sections = []; } else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); } applyAppearance(); renderCatalog(); if (!document.getElementById('adminPanel').classList.contains('translate-x-full')) window.showAdminPage(currentAdminPage); }); }
+    function initDatabase() { onSnapshot(doc(db, "store", "data"), (d) => { if (d.exists()) { storeData = d.data(); if (!storeData.sections) storeData.sections = []; } else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); } applyAppearance(); renderCatalog(); const isOpen = !document.getElementById('adminPanel').classList.contains('translate-x-full'); if (isOpen) window.showAdminPage(currentAdminPage); }); }
     async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error', 'error'); } }
     function initAuth() { onAuthStateChanged(auth, (u) => { isLoggedIn = !!u; updateAdminFab(); }); }
     async function handleLogin() { try { await signInWithEmailAndPassword(auth, document.getElementById('loginUser').value, document.getElementById('loginPass').value); closeAllModals(); openAdminPanel(); } catch (e) { document.getElementById('loginError').classList.remove('hidden'); } }
@@ -154,7 +156,7 @@
     }
     window.setActiveTab = (i) => { activeSectionTab = i; renderCatalog(); };
 
-    window.addToCart = (sId, pId) => { const s = storeData.sections.find(x => x.id === sId), p = s.products.find(x => x.id === pId), e = cart.find(x => x.id === pId); if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); updateCartBadge(); showToast('Añadido al carrito', 'success'); };
+    window.addToCart = (sId, pId) => { const s = storeData.sections.find(x => x.id === sId), p = s.products.find(x => x.id === pId), e = cart.find(x => x.id === pId); if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); updateCartBadge(); showToast('Añadido', 'success'); };
     window.removeFromCart = (pId) => { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); };
     window.updateQuantity = (pId, d) => { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { window.removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); };
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
@@ -205,4 +207,4 @@
     });
   </script>
 </body>
-          </html>
+  </html>
