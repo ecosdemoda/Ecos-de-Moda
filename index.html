@@ -28,7 +28,7 @@
     body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
     .font-display { font-family: 'Playfair Display', serif; }
 
-    /* BURBUJAS FLOTANTES - LOGO LLENA LA BURBUJA COMPLETAMENTE */
+    /* BURBUJAS FLOTANTES */
     .float-shape {
       position: absolute; border-radius: 50%; pointer-events: none;
       animation: floatUp 8s ease-in-out infinite;
@@ -37,9 +37,9 @@
       -webkit-backdrop-filter: blur(6px);
       box-shadow: 0 8px 32px rgba(233, 30, 140, 0.25), inset 0 0 20px rgba(255,255,255,0.3);
       display: flex; align-items: center; justify-content: center; 
-      padding: 0; /* SIN ESPACIO INTERNO: El logo toca los bordes de la bola */
+      padding: 0; 
       border: 1px solid rgba(255,255,255,0.4);
-      overflow: hidden; /* Asegura que la imagen circular no sobresalga */
+      overflow: hidden; 
     }
     .float-shape img { 
       width: 100%; 
@@ -90,10 +90,12 @@
   <main id="publicSite">
     <section id="heroSection" class="relative min-h-screen flex items-center justify-center overflow-hidden">
       
-      <!-- LOGO DEL FONDO GIGANTE Y MÁS VISIBLE -->
-      <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" class="absolute right-0 bottom-0 h-[90%] md:h-[120%] object-contain opacity-[0.18] pointer-events-none select-none" style="mask-image:linear-gradient(to left, black 65%, transparent 100%); -webkit-mask-image:linear-gradient(to left, black 65%, transparent 100%);" alt="Silueta Ecos de Moda">
+      <!-- CONTENEDOR DE LA SILUETA GIGANTE (SOLO LA CHICA) -->
+      <div class="absolute right-0 bottom-0 h-[120%] w-[55%] md:w-[45%] pointer-events-none select-none" style="mask-image:linear-gradient(to left, black 65%, transparent 100%); -webkit-mask-image:linear-gradient(to left, black 65%, transparent 100%);">
+        <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" class="w-full h-full object-cover object-center opacity-[0.18]" alt="Silueta Ecos de Moda">
+      </div>
       
-      <!-- BURBUJAS CON LOGO REDONDO DEL TAMAÑO EXACTO DE LA BOLA -->
+      <!-- BURBUJAS CON LOGO REDONDO -->
       <div class="float-shape w-28 h-28 md:w-40 md:h-40" style="top:12%;left:8%">
         <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo Circular">
       </div>
