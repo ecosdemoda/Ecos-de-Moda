@@ -1,42 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ecos de Moda</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: { blush: '#FFFAFC', charcoal: '#1A1A1A', fuchsia: '#E91E8C', sand: '#F3E5F5', drift: '#6B7280', admin: '#111827', adminCard: '#1F2937' },
-          fontFamily: { display: ['Playfair Display', 'serif'], body: ['Lato', 'sans-serif'] }
-        }
-      }
-    }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root { --bg: #FFFAFC; --fg: #1A1A1A; --accent: #E91E8C; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
-    .font-display { font-family: 'Playfair Display', serif; }
-    .float-shape { position: absolute; border-radius: 50%; pointer-events: none; animation: float 8s ease-in-out infinite; background: rgba(255,255,255,0.9); box-shadow: 0 8px 25px rgba(233, 30, 140, 0.2); display: flex; align-items: center; justify-content: center; padding: 20%; }
-    .float-shape img { width: 100%; height: 100%; object-fit: contain; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
-    .product-card { transition: transform 0.3s; }
-    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(233,30,140,0.15); }
-    .tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
-    .nav-scrolled { background: rgba(255,250,252,0.95); backdrop-filter: blur(12px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); }
-    .modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .modal-overlay.visible { opacity: 1; pointer-events: all; }
-    .modal-box { transform: translateY(20px); transition: transform 0.3s; width: 95%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-    .modal-overlay.visible .modal-box { transform: translateY(0); }
-    .toast { position: fixed; bottom: 30px; right: 30px; z-index: 2100; padding: 14px 24px; border-radius: 12px; color: #fff; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.4s; pointer-events: none; max-width: 90%; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { background: #16a34a; } .toast.error { background: #dc2626; } .toast.info { background: var(--accent); }
-    .admin-scroll::-webkit-scrollbar { width: 6px; } .admin-scroll::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 3px; }
-    .badge-cart { position: absolute; top: -5px; right: -5px; background: var(--accent); color: white; border-radius:
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,
