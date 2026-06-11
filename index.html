@@ -27,12 +27,25 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
     .font-display { font-family: 'Playfair Display', serif; }
-    .float-shape { position: absolute; border-radius: 50%; pointer-events: none; animation: floatUp 8s ease-in-out infinite; background: rgba(255,255,255,0.9); box-shadow: 0 8px 25px rgba(233, 30, 140, 0.2); display: flex; align-items: center; justify-content: center; padding: 20%; }
-    .float-shape img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* BURBUJAS FLOTANTES MEJORADAS */
+    .float-shape {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      animation: floatUp 8s ease-in-out infinite;
+      background: rgba(255,255,255,0.15); /* Fondo transparente tipo cristal */
+      backdrop-filter: blur(6px); /* Efecto cristal */
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 8px 32px rgba(233, 30, 140, 0.2), inset 0 0 20px rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center; 
+      padding: 18%; /* Espacio para que el logo respire */
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .float-shape img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(233, 30, 140, 0.3)); }
     .float-shape:nth-child(2) { animation-delay: -2s; animation-duration: 10s; }
     .float-shape:nth-child(3) { animation-delay: -4s; animation-duration: 12s; }
     .float-shape:nth-child(4) { animation-delay: -1s; animation-duration: 9s; }
     @keyframes floatUp { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+
     .product-card { transition: transform 0.3s, box-shadow 0.3s; }
     .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(233, 30, 140, 0.15); }
     .tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; cursor: pointer; }
@@ -68,10 +81,13 @@
   <main id="publicSite">
     <section id="heroSection" class="relative min-h-screen flex items-center justify-center overflow-hidden">
       <img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" class="absolute right-0 bottom-0 h-[60%] md:h-[85%] object-contain opacity-10 pointer-events-none select-none" style="mask-image:linear-gradient(to left,black 40%,transparent 100%);-webkit-mask-image:linear-gradient(to left,black 40%,transparent 100%);" alt="Silueta">
-      <div class="float-shape w-24 h-24 md:w-36 md:h-36" style="top:12%;left:8%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo"></div>
-      <div class="float-shape w-20 h-20 md:w-28 md:h-28" style="top:60%;left:12%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo"></div>
-      <div class="float-shape w-28 h-28 md:w-40 md:h-40" style="top:25%;right:25%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo"></div>
-      <div class="float-shape w-16 h-16 md:w-24 md:h-24" style="bottom:15%;right:10%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo"></div>
+      
+      <!-- BURBUJAS CON EL LOGO -->
+      <div class="float-shape w-24 h-24 md:w-36 md:h-36" style="top:12%;left:8%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo Ecos de Moda"></div>
+      <div class="float-shape w-20 h-20 md:w-28 md:h-28" style="top:60%;left:12%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo Ecos de Moda"></div>
+      <div class="float-shape w-28 h-28 md:w-40 md:h-40" style="top:25%;right:25%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo Ecos de Moda"></div>
+      <div class="float-shape w-16 h-16 md:w-24 md:h-24" style="bottom:15%;right:10%"><img src="https://ecosdemoda.github.io/Ecos-de-Moda/logo.png" alt="Logo Ecos de Moda"></div>
+
       <div class="relative z-10 text-center px-6 max-w-4xl">
         <p id="heroSubtitle" class="text-fuchsia uppercase tracking-[0.4em] text-sm mb-4 font-bold">Tienda de Regalos</p>
         <h1 id="heroTitle" class="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-tight mb-8" style="color:var(--fg)">Ecos de Moda</h1>
@@ -125,7 +141,6 @@
         if (d.exists()) { 
           storeData = d.data(); 
           if (!storeData.sections) storeData.sections = []; 
-          // VALIDACIÓN CRÍTICA: Asegurar que cada sección tenga su array de productos
           storeData.sections.forEach(s => { if (!s.products) s.products = []; });
         } else { 
           storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
@@ -135,22 +150,27 @@
         renderCatalog(); 
         if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); 
       }, (error) => {
-        console.error("Error al leer Firebase:", error);
-        showToast('Error de conexión con la base de datos', 'error');
+        console.error("Error Firebase:", error);
+        if (error.code === 'permission-denied') {
+          showToast('Error: Permisos de Firebase. Configura reglas.', 'error');
+        } else {
+          showToast('Error de red o VPN requerida.', 'error');
+        }
       }); 
     }
     
     async function saveData() { 
       try { 
-        // Limpiar datos undefined antes de guardar para evitar errores en Firestore
         const cleanData = JSON.parse(JSON.stringify(storeData));
         await setDoc(doc(db, "store", "data"), cleanData); 
       } catch (e) { 
         console.error("Error al guardar:", e);
-        if (e.message.includes("maximum size")) {
-          showToast('Error: Documento muy grande. Usa imágenes más ligeras.', 'error');
+        if (e.message.includes("maximum size") || e.code === 'resource-exhausted') {
+          showToast('Error: Base de datos llena. Sube imágenes más ligeras.', 'error');
+        } else if (e.code === 'permission-denied') {
+          showToast('Error: Sin permiso para guardar.', 'error');
         } else {
-          showToast('Error al guardar cambios', 'error'); 
+          showToast('Error al guardar cambios.', 'error'); 
         }
       } 
     }
@@ -159,8 +179,8 @@
     async function handleLogin() { try { await signInWithEmailAndPassword(auth, document.getElementById('loginUser').value, document.getElementById('loginPass').value); closeAllModals(); openAdminPanel('dashboard'); } catch (e) { document.getElementById('loginError').classList.remove('hidden'); } }
     async function handleLogout() { await signOut(auth); closeAllModals(); }
 
-    function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor); document.documentElement.style.setProperty('--fg', storeData.headerColor); document.documentElement.style.setProperty('--accent', storeData.accentColor); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName; document.getElementById('heroTitle').textContent = storeData.heroTitle; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle; document.getElementById('footerName').textContent = storeData.storeName; }
-    function formatPrice(p) { return `${p.toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(p * (storeData.exchangeRate || 300)).toLocaleString()} CUP</span>`; }
+    function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor || '#FFFAFC'); document.documentElement.style.setProperty('--fg', storeData.headerColor || '#1A1A1A'); document.documentElement.style.setProperty('--accent', storeData.accentColor || '#E91E8C'); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName || 'Ecos de Moda'; document.getElementById('heroTitle').textContent = storeData.heroTitle || 'Ecos de Moda'; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle || 'Tienda de Regalos'; document.getElementById('footerName').textContent = storeData.storeName || 'Ecos de Moda'; }
+    function formatPrice(p) { return `${(p || 0).toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round((p || 0) * (storeData.exchangeRate || 300)).toLocaleString()} CUP</span>`; }
 
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
@@ -171,20 +191,16 @@
           img.onerror = () => reject('La imagen está corrupta');
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 300; // Reducido de 400 a 300 para guardar espacio en Firestore
-            const MAX_HEIGHT = 300;
+            const MAX_WIDTH = 250; 
+            const MAX_HEIGHT = 250;
             let width = img.width, height = img.height;
-
             if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
             else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-            
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            
-            // Calidad 0.5 para que pese aún menos y no rompa el límite de Firestore
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.4);
             resolve(dataUrl);
           };
           img.src = event.target.result;
@@ -210,7 +226,7 @@
           if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon || ''} mr-2" style="color:var(--accent)"></i>${s.name || ''}</h3></div>`; 
           s.products.forEach(p => { 
             if(!p) return;
-            const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; 
+            const qty = p.quantity != null ? p.quantity : 10; 
             const isAvailable = qty > 0;
             const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
             pH += `
@@ -223,7 +239,7 @@
                   <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">
                     ${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disponibles: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}
                   </p>
-                  <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price || 0)}</p>
+                  <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price)}</p>
                   <div class="mt-auto">
                     ${isAvailable 
                       ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button>`
@@ -237,8 +253,7 @@
         gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos disponibles.</p>'; 
         refreshReveals(); 
       } catch(e) {
-        console.error("Error al renderizar catálogo:", e);
-        document.getElementById('productGrid').innerHTML = '<p class="col-span-full text-center text-red-500 py-12">Error al mostrar productos. Revisa la consola.</p>';
+        console.error("Error al renderizar:", e);
       }
     }
     
@@ -249,9 +264,8 @@
       if(!s) return;
       const p = s.products.find(x => x.id === pId); 
       if(!p) return;
-      const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10;
+      const qty = p.quantity != null ? p.quantity : 10;
       const currentInCart = cart.find(x => x.id === pId)?.quantity || 0;
-
       if (currentInCart >= qty) { showToast('No hay más unidades disponibles', 'error'); return; }
       const e = cart.find(x => x.id === pId); 
       if (e) e.quantity++; 
@@ -262,7 +276,7 @@
     function removeFromCart(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     function updateQuantity(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
+    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
     
     function sendWhatsappOrder() { 
       const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
@@ -276,7 +290,7 @@
         msg += `  • ${i.name} x${i.quantity} — ${sub.toFixed(2)} USD\n`; 
         for(let s of storeData.sections) { 
           const p = s.products.find(x => x.id === i.id); 
-          if(p) { const currentQty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; p.quantity = Math.max(0, currentQty - i.quantity); } 
+          if(p) { const currentQty = p.quantity != null ? p.quantity : 10; p.quantity = Math.max(0, currentQty - i.quantity); } 
         } 
       }); 
       msg += `\n💰 *Total: ${total.toFixed(2)} USD | ${Math.round(total * (storeData.exchangeRate || 300)).toLocaleString()} CUP*`; 
@@ -301,13 +315,13 @@
     window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === editingSectionId); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); };
     window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== id); await saveData(); window.showAdminPage('sections'); };
 
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = p.quantity !== undefined && p.quantity !== null ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price || 0)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
+    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = p.quantity != null ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
 
     window.renderProductForm = function(secId, prodId) {
       editingProductSectionId = secId; editingProductId = prodId;
       const s = storeData.sections.find(x => x.id === secId);
       const p = prodId ? s?.products.find(x => x.id === prodId) : null;
-      const qty = p ? (p.quantity !== undefined && p.quantity !== null ? p.quantity : 10) : 10;
+      const qty = p ? (p.quantity != null ? p.quantity : 10) : 10;
       const content = document.getElementById('adminContent');
       content.innerHTML = `
         <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button>
@@ -323,11 +337,9 @@
             <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-40 object-contain rounded-xl mb-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
             <input id="pf_file" type="file" accept="image/*" class="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
             <input id="pf_image_url" type="hidden" value="${p ? p.image : ''}">
-            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Se comprimirá automáticamente para no romper la base de datos.</p>
           </div>
           <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar Producto</button>
         </div>`;
-      
       setTimeout(() => {
         const fileInput = document.getElementById('pf_file');
         if(fileInput) {
@@ -358,22 +370,19 @@
 
       if (file) {
         btn.disabled = true; 
-        btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando imagen...';
-        
+        btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando...';
         try {
           imageUrl = await compressAndProcessImage(file);
         } catch (error) {
-          console.error(error);
           showToast('Error al procesar la imagen', 'error');
-          btn.disabled = false; 
-          btn.innerHTML = 'Guardar Producto';
+          btn.disabled = false; btn.innerHTML = 'Guardar Producto';
           return;
         }
       }
 
       const s = storeData.sections.find(x => x.id === editingProductSectionId);
       if (!s) { showToast('Error: Sección no encontrada', 'error'); return; }
-      if (!s.products) s.products = []; // Seguridad extra
+      if (!s.products) s.products = [];
 
       if (editingProductId) {
         const p = s.products.find(x => x.id === editingProductId);
@@ -383,9 +392,9 @@
       }
       
       await saveData();
-      showToast('Producto guardado en la base de datos', 'success');
+      showToast('Producto guardado', 'success');
       window.showAdminPage('products');
-      renderCatalog(); // Forzar renderizado del catálogo público al mismo tiempo
+      renderCatalog(); 
     };
 
     window.deleteProduct = async function(secId, prodId) {
@@ -396,7 +405,7 @@
         await saveData();
         showToast('Producto eliminado', 'success');
         renderProductList(document.getElementById('adminContent'));
-        renderCatalog(); // Actualizar vista pública
+        renderCatalog(); 
       }
     };
 
