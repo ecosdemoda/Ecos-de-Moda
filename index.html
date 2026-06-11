@@ -34,11 +34,21 @@
     .nav-scrolled { background: rgba(255,248,240,0.95) !important; backdrop-filter: blur(12px); box-shadow: 0 2px 20px rgba(45,32,22,0.08); }
     .modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .modal-overlay.visible { opacity: 1; pointer-events: all; }
-    .modal-box { transform: translateY(20px); transition: transform 0.3s; }
+    .modal-box { transform: translateY(20px); transition: transform 0.3s; width: 95%; max-width: 500px; }
     .modal-overlay.visible .modal-box { transform: translateY(0); }
+    
+    /* Panel Admin Responsive */
     #adminPanel { position: fixed; inset: 0; z-index: 1050; transform: translateX(100%); transition: transform 0.4s; pointer-events: none; }
     #adminPanel.open { transform: translateX(0); pointer-events: all; }
-    .toast { position: fixed; bottom: 30px; right: 30px; z-index: 2000; padding: 14px 24px; border-radius: 12px; color: #fff; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.4s; pointer-events: none; }
+    #adminSidebar { transition: transform 0.3s; z-index: 60; }
+    @media (max-width: 767px) {
+      #adminSidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); }
+      #adminSidebar.open { transform: translateX(0); }
+      #sidebarOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; }
+      #sidebarOverlay.active { display: block; }
+    }
+
+    .toast { position: fixed; bottom: 30px; right: 30px; z-index: 2000; padding: 14px 24px; border-radius: 12px; color: #fff; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.4s; pointer-events: none; max-width: 90%; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { background: #16a34a; } .toast.error { background: #dc2626; } .toast.info { background: #C8956C; }
     .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s, transform 0.7s; } .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -48,7 +58,6 @@
     .pattern-bg { background-image: radial-gradient(circle at 20% 80%, rgba(200,149,108,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(232,184,109,0.06) 0%, transparent 50%); }
     .admin-ribbon { position: fixed; top: 80px; left: 28px; z-index: 999; background: #16a34a; color: #fff; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; display: none; }
     .admin-ribbon.show { display: flex; align-items: center; gap: 6px; }
-    @media (max-width: 768px) { .admin-fab span { display: none; } .admin-fab { padding: 14px; border-radius: 50%; } }
   </style>
 </head>
 <body>
@@ -91,25 +100,25 @@
   </footer>
 
   <button class="admin-fab" id="adminFab"><i class="fas fa-lock"></i> <span>Admin</span></button>
-  <div class="admin-ribbon" id="adminRibbon"><i class="fas fa-check-circle"></i> Sesión admin activa</div>
+  <div class="admin-ribbon" id="adminRibbon"><i class="fas fa-check-circle"></i> Admin</div>
 
   <!-- MODAL LOGIN -->
   <div id="loginModal" class="modal-overlay">
-    <div class="modal-box bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
-      <h3 class="font-display text-2xl font-bold text-bark mb-4 text-center">Acceso Administrador</h3>
+    <div class="modal-box bg-white rounded-2xl p-8 mx-4 shadow-2xl">
+      <h3 class="font-display text-2xl font-bold text-bark mb-4 text-center">Acceso Admin</h3>
       <div class="space-y-4">
-        <input id="loginUser" type="email" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="Email de admin">
-        <input id="loginPass" type="password" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="Contraseña">
+        <input id="loginUser" type="email" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg" placeholder="Email">
+        <input id="loginPass" type="password" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg" placeholder="Contraseña">
         <p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p>
-        <button id="loginBtn" class="w-full py-3 rounded-xl font-bold text-white" style="background:var(--accent)">Iniciar Sesión</button>
-        <button id="loginCancel" class="w-full py-3 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
+        <button id="loginBtn" class="w-full py-4 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Iniciar Sesión</button>
+        <button id="loginCancel" class="w-full py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL PRODUCTO -->
   <div id="productModal" class="modal-overlay">
-    <div class="modal-box bg-white rounded-2xl p-8 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <h3 id="productModalTitle" class="font-display text-2xl font-bold text-bark mb-6">Producto</h3>
       <input type="hidden" id="pm_sectionId"><input type="hidden" id="pm_productId">
       <div class="space-y-4">
@@ -118,8 +127,8 @@
         <div><label class="block text-sm font-bold text-bark mb-2">Imagen (URL)</label><input id="pm_imageUrl" type="url" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="https://..."></div>
         <div id="pm_preview" class="w-full h-48 rounded-xl bg-sand/20 border-2 border-dashed border-sand flex items-center justify-center overflow-hidden"><span class="text-drift text-sm">Vista previa</span></div>
         <div class="flex gap-3 pt-2">
-          <button id="pm_save" class="flex-1 py-3 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button>
-          <button id="pm_cancel" class="flex-1 py-3 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
+          <button id="pm_save" class="flex-1 py-4 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button>
+          <button id="pm_cancel" class="flex-1 py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
         </div>
       </div>
     </div>
@@ -127,53 +136,64 @@
 
   <!-- MODAL SECCIÓN -->
   <div id="sectionModal" class="modal-overlay">
-    <div class="modal-box bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
+    <div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl">
       <h3 class="font-display text-2xl font-bold text-bark mb-6">Sección</h3>
       <input type="hidden" id="sm_sectionId">
       <div class="space-y-4">
         <div><label class="block text-sm font-bold text-bark mb-1">Nombre</label><input id="sm_name" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none"></div>
         <div><label class="block text-sm font-bold text-bark mb-1">Icono (Font Awesome)</label><input id="sm_icon" type="text" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="fas fa-gift"></div>
         <div class="flex gap-3 pt-2">
-          <button id="sm_save" class="flex-1 py-3 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button>
-          <button id="sm_cancel" class="flex-1 py-3 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
+          <button id="sm_save" class="flex-1 py-4 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar</button>
+          <button id="sm_cancel" class="flex-1 py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PANEL ADMIN -->
-  <div id="adminPanel" class="bg-admin text-white flex">
-    <aside class="w-64 bg-admin border-r border-gray-800 flex flex-col shrink-0 h-screen overflow-y-auto admin-scroll">
-      <div class="p-6 border-b border-gray-800"><h2 class="font-display text-xl font-bold text-copper">Panel Admin</h2></div>
-      <nav class="flex-1 p-4 space-y-1">
-        <button onclick="window.showAdminPage('dashboard')" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-gray-800 text-gray-300" data-page="dashboard"><i class="fas fa-chart-bar w-5 text-center"></i> Dashboard</button>
-        <button onclick="window.showAdminPage('sections')" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-gray-800 text-gray-300" data-page="sections"><i class="fas fa-layer-group w-5 text-center"></i> Secciones</button>
-        <button onclick="window.showAdminPage('products')" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-gray-800 text-gray-300" data-page="products"><i class="fas fa-boxes-stacked w-5 text-center"></i> Productos</button>
-        <button onclick="window.showAdminPage('appearance')" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-gray-800 text-gray-300" data-page="appearance"><i class="fas fa-palette w-5 text-center"></i> Apariencia</button>
+  <!-- PANEL ADMIN RESPONSIVE -->
+  <div id="adminPanel" class="bg-admin text-white flex flex-col md:flex-row">
+    
+    <!-- Overlay para cerrar menú en móvil -->
+    <div id="sidebarOverlay" onclick="window.closeAdminSidebar()"></div>
+
+    <!-- Menú Lateral -->
+    <aside id="adminSidebar" class="w-72 bg-admin border-r border-gray-800 flex flex-col shrink-0 h-screen overflow-y-auto admin-scroll">
+      <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+        <h2 class="font-display text-xl font-bold text-copper">Panel Admin</h2>
+        <button onclick="window.closeAdminSidebar()" class="md:hidden text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <button onclick="window.showAdminPage('dashboard'); window.closeAdminSidebar()" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-gray-800 text-gray-300 text-lg" data-page="dashboard"><i class="fas fa-chart-bar w-6 text-center"></i> Dashboard</button>
+        <button onclick="window.showAdminPage('sections'); window.closeAdminSidebar()" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-gray-800 text-gray-300 text-lg" data-page="sections"><i class="fas fa-layer-group w-6 text-center"></i> Secciones</button>
+        <button onclick="window.showAdminPage('products'); window.closeAdminSidebar()" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-gray-800 text-gray-300 text-lg" data-page="products"><i class="fas fa-boxes-stacked w-6 text-center"></i> Productos</button>
+        <button onclick="window.showAdminPage('appearance'); window.closeAdminSidebar()" class="admin-nav-btn w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-gray-800 text-gray-300 text-lg" data-page="appearance"><i class="fas fa-palette w-6 text-center"></i> Apariencia</button>
       </nav>
       <div class="p-4 border-t border-gray-800">
-        <button id="adminLogout" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-red-900/30 text-red-400"><i class="fas fa-sign-out-alt w-5 text-center"></i> Cerrar Sesión</button>
+        <button id="adminLogout" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left hover:bg-red-900/30 text-red-400 text-lg"><i class="fas fa-sign-out-alt w-6 text-center"></i> Cerrar Sesión</button>
       </div>
     </aside>
+
+    <!-- Contenido Principal -->
     <div class="flex-1 h-screen overflow-y-auto admin-scroll">
-      <header class="sticky top-0 bg-admin/95 backdrop-blur border-b border-gray-800 px-8 py-4 flex justify-between items-center z-10">
-        <h2 id="adminPageTitle" class="font-display text-xl font-bold">Dashboard</h2>
-        <button id="adminClose" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+      <header class="sticky top-0 bg-admin/95 backdrop-blur border-b border-gray-800 px-6 py-4 flex justify-between items-center z-10">
+        <div class="flex items-center gap-4">
+          <button id="adminMenuToggle" class="md:hidden w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center transition"><i class="fas fa-bars text-xl"></i></button>
+          <h2 id="adminPageTitle" class="font-display text-xl font-bold">Dashboard</h2>
+        </div>
+        <button id="adminClose" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center transition" aria-label="Cerrar panel"><i class="fas fa-times text-xl"></i></button>
       </header>
-      <div id="adminContent" class="p-8"></div>
+      <div id="adminContent" class="p-6 md:p-8"></div>
     </div>
   </div>
 
   <div id="toast" class="toast"></div>
 
-  <!-- CÓDIGO FIREBASE Y LÓGICA CON TUS CLAVES YA PUESTAS -->
+  <!-- CÓDIGO FIREBASE Y LÓGICA -->
   <script type="module">
-    // 1. Importar Firebase (Versión 12.14.0)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-    // 2. Tu configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCHQvXHPyZbiqlhMsoDsSqkjrQ5wATj-Cw",
       authDomain: "ecosdemoda-40202.firebaseapp.com",
@@ -183,12 +203,10 @@
       appId: "1:1077783413744:web:bebfb4f7956f6472709335"
     };
 
-    // 3. Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Estado de la app
     let storeData = { sections: [] };
     let isLoggedIn = false;
     let currentAdminPage = 'dashboard';
@@ -205,6 +223,9 @@
         ]},
         { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [
           { id: 3, name: 'Set de Copas Grabadas', price: 65.00, image: 'https://picsum.photos/seed/copas05/400/400' }
+        ]},
+        { id: 3, name: 'Originales', icon: 'fas fa-star', products: [
+          { id: 4, name: 'Mapa Estelar', price: 39.00, image: 'https://picsum.photos/seed/mapa17/400/400' }
         ]}
       ]
     };
@@ -212,13 +233,22 @@
     /* === BASE DE DATOS === */
     function initDatabase() {
       onSnapshot(doc(db, "store", "data"), (docSnap) => {
-        if (docSnap.exists()) { storeData = docSnap.data(); } 
-        else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); }
+        if (docSnap.exists()) { 
+          storeData = docSnap.data(); 
+          // SOLUCIÓN CATÁLOGO VACÍO: Si no hay secciones, ponemos las de ejemplo
+          if (!storeData.sections || storeData.sections.length === 0) {
+            storeData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            saveData();
+          }
+        } else { 
+          storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
+          saveData(); 
+        }
         applyAppearance(); renderCatalog();
         if (document.getElementById('adminPanel').classList.contains('open')) window.showAdminPage(currentAdminPage);
       });
     }
-    async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error al guardar en la nube: ' + e.message, 'error'); } }
+    async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error al guardar: ' + e.message, 'error'); } }
 
     /* === AUTENTICACIÓN === */
     function initAuth() {
@@ -246,8 +276,8 @@
       const tabsContainer = document.getElementById('sectionTabs');
       const gridContainer = document.getElementById('productGrid');
       const sections = storeData.sections || [];
-      let tabsHtml = `<button class="tab-btn px-5 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`;
-      sections.forEach((sec, i) => { tabsHtml += `<button class="tab-btn px-5 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${sec.icon} mr-1"></i>${sec.name}</button>`; });
+      let tabsHtml = `<button class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`;
+      sections.forEach((sec, i) => { tabsHtml += `<button class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${sec.icon} mr-1"></i>${sec.name}</button>`; });
       tabsContainer.innerHTML = tabsHtml;
       let productsHtml = '';
       const showSections = activeSectionTab === -1 ? sections : (sections[activeSectionTab] ? [sections[activeSectionTab]] : sections);
@@ -264,7 +294,9 @@
 
     /* === PANEL ADMIN === */
     function openAdminPanel() { document.getElementById('adminPanel').classList.add('open'); document.body.style.overflow = 'hidden'; window.showAdminPage('dashboard'); }
-    function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); document.body.style.overflow = ''; }
+    function closeAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); document.body.style.overflow = ''; window.closeAdminSidebar(); }
+    window.openAdminSidebar = () => { document.getElementById('adminSidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('active'); };
+    window.closeAdminSidebar = () => { document.getElementById('adminSidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); };
     
     window.showAdminPage = (page) => {
       currentAdminPage = page;
@@ -280,15 +312,15 @@
 
     function renderAdminDashboard(el) {
       let total = 0; storeData.sections.forEach(s => total += s.products.length);
-      el.innerHTML = `<div class="grid grid-cols-2 gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Secciones</p><p class="text-3xl font-bold">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Productos</p><p class="text-3xl font-bold">${total}</p></div></div>`;
+      el.innerHTML = `<div class="grid grid-cols-2 gap-4 md:gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400 text-sm md:text-base">Secciones</p><p class="text-3xl font-bold">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400 text-sm md:text-base">Productos</p><p class="text-3xl font-bold">${total}</p></div></div>`;
     }
 
     function renderAdminSections(el) {
       let listHtml = '';
       storeData.sections.forEach(s => {
-        listHtml += `<div class="bg-adminCard rounded-xl p-5 border border-gray-700 flex justify-between items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon} text-copper"></i><span class="font-bold">${s.name}</span><span class="text-gray-400 text-sm">(${s.products.length})</span></div><div class="flex gap-2"><button onclick="window.openSectionModal(${s.id})" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm">Editar</button><button onclick="window.deleteSection(${s.id})" class="px-4 py-2 rounded-lg bg-red-900/30 text-red-400 text-sm">Eliminar</button></div></div>`;
+        listHtml += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon} text-copper text-xl"></i><div><span class="font-bold text-lg">${s.name}</span><br class="sm:hidden"><span class="text-gray-400 text-sm">(${s.products.length} productos)</span></div></div><div class="flex gap-2 w-full sm:w-auto"><button onclick="window.openSectionModal(${s.id})" class="flex-1 sm:flex-none px-4 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm font-bold text-center">Editar</button><button onclick="window.deleteSection(${s.id})" class="flex-1 sm:flex-none px-4 py-3 rounded-lg bg-red-900/30 text-red-400 text-sm font-bold text-center">Eliminar</button></div></div>`;
       });
-      el.innerHTML = `<div class="flex justify-between mb-6"><p class="text-gray-400">Gestiona secciones</p><button onclick="window.openSectionModal()" class="px-5 py-2 rounded-xl font-bold text-white" style="background:var(--accent)">Nueva Sección</button></div><div class="space-y-4">${listHtml || '<p class="text-gray-500 text-center py-8">No hay secciones.</p>'}</div>`;
+      el.innerHTML = `<div class="flex justify-between items-center mb-6"><p class="text-gray-400 hidden md:block">Gestiona secciones</p><button onclick="window.openSectionModal()" class="w-full md:w-auto px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-4">${listHtml || '<p class="text-gray-500 text-center py-8">No hay secciones.</p>'}</div>`;
     }
 
     function renderAdminProducts(el) {
@@ -297,14 +329,14 @@
       let productsHtml = '';
       if (storeData.sections.length > 0) {
         const sec = storeData.sections[adminSelectedSection];
-        sec.products.forEach(p => { productsHtml += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image}" class="w-full h-32 object-cover" onerror="this.src='https://picsum.photos/seed/fallback/400/400'"><div class="p-4"><h4 class="font-bold truncate">${p.name}</h4><p class="text-copper">${p.price.toFixed(2)} €</p><div class="flex gap-2 mt-3"><button onclick="window.openProductModal(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 text-sm">Editar</button><button onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 text-sm">Eliminar</button></div></div></div>`; });
+        sec.products.forEach(p => { productsHtml += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image}" class="w-full h-40 object-cover" onerror="this.src='https://picsum.photos/seed/fallback/400/400'"><div class="p-4"><h4 class="font-bold truncate text-lg">${p.name}</h4><p class="text-copper text-xl font-bold mb-3">${p.price.toFixed(2)} €</p><div class="flex gap-2"><button onclick="window.openProductModal(${sec.id}, ${p.id})" class="flex-1 py-3 rounded-lg bg-gray-700 font-bold text-center">Editar</button><button onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-3 rounded-lg bg-red-900/30 text-red-400 font-bold text-center">Eliminar</button></div></div></div>`; });
       }
-      el.innerHTML = `<div class="flex flex-wrap justify-between items-center gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-2 text-white outline-none">${selectHtml}</select><button onclick="window.openProductModal(${storeData.sections[adminSelectedSection]?.id || 0})" class="px-5 py-2 rounded-xl font-bold text-white" style="background:var(--accent)">Nuevo Producto</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${productsHtml || '<p class="col-span-full text-gray-500 text-center py-8">No hay productos.</p>'}</div>`;
+      el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${selectHtml}</select><button onclick="window.openProductModal(${storeData.sections[adminSelectedSection]?.id || 0})" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${productsHtml || '<p class="col-span-full text-gray-500 text-center py-8">No hay productos.</p>'}</div>`;
       document.getElementById('adminSectionSelect')?.addEventListener('change', function() { adminSelectedSection = parseInt(this.value); window.showAdminPage('products'); });
     }
 
     function renderAdminAppearance(el) {
-      el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-4"><h3 class="font-display text-lg font-bold text-copper">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre de la tienda</label><input id="ap_storeName" type="text" value="${storeData.storeName}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor}" class="w-full h-12 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor}" class="w-full h-12 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor}" class="w-full h-12 rounded cursor-pointer bg-transparent border-0"></div></div></div><button onclick="window.saveAppearance()" class="px-8 py-3 rounded-xl font-bold text-white" style="background:var(--accent)">Guardar Apariencia</button></div>`;
+      el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-copper">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre de la tienda</label><input id="ap_storeName" type="text" value="${storeData.storeName}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div></div></div><button onclick="window.saveAppearance()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar Apariencia</button></div>`;
     }
 
     /* === CRUD SECCIONES === */
@@ -319,7 +351,7 @@
       const id = document.getElementById('sm_sectionId').value;
       const name = document.getElementById('sm_name').value.trim();
       const icon = document.getElementById('sm_icon').value.trim() || 'fas fa-gift';
-      if (!name) return;
+      if (!name) return showToast('El nombre es obligatorio', 'error');
       if (id) { const sec = storeData.sections.find(s => s.id === parseInt(id)); if (sec) { sec.name = name; sec.icon = icon; } } 
       else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); }
       await saveData(); closeAllModals(); window.showAdminPage('sections'); showToast('Sección guardada', 'success');
@@ -348,7 +380,7 @@
       const name = document.getElementById('pm_name').value.trim();
       const price = parseFloat(document.getElementById('pm_price').value);
       const image = document.getElementById('pm_imageUrl').value.trim() || 'https://picsum.photos/seed/' + Date.now() + '/400/400';
-      if (!name || isNaN(price)) return;
+      if (!name || isNaN(price)) return showToast('Nombre y precio son obligatorios', 'error');
       const sec = storeData.sections.find(s => s.id === secId); if (!sec) return;
       if (prodId) { const prod = sec.products.find(p => p.id === parseInt(prodId)); if (prod) { prod.name = name; prod.price = price; prod.image = image; } } 
       else { sec.products.push({ id: Date.now(), name, price, image }); }
@@ -386,6 +418,7 @@
       document.getElementById('loginCancel').addEventListener('click', closeAllModals);
       document.getElementById('adminClose').addEventListener('click', closeAdminPanel);
       document.getElementById('adminLogout').addEventListener('click', handleLogout);
+      document.getElementById('adminMenuToggle').addEventListener('click', window.openAdminSidebar);
       document.getElementById('pm_cancel').addEventListener('click', closeAllModals);
       document.getElementById('sm_cancel').addEventListener('click', closeAllModals);
       document.getElementById('pm_save').addEventListener('click', window.saveProduct);
@@ -395,4 +428,4 @@
     });
   </script>
 </body>
-  </html>
+        </html>
