@@ -88,27 +88,24 @@
   </main>
   <footer class="py-10 px-6 text-center" style="background:var(--fg)"><p id="footerName" class="font-display text-white text-xl font-bold mb-2">Ecos de Moda</p></footer>
 
+  <!-- MODAL CARRITO -->
   <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="font-display text-2xl font-bold" style="color:var(--fg)">Mi Carrito</h3><button type="button" onclick="window.closeAllModals()" class="text-drift hover:text-charcoal text-xl"><i class="fas fa-times"></i></button></div><div id="cartItems" class="space-y-4 mb-6"></div><div id="checkoutForm" class="space-y-4 border-t border-sand pt-6 hidden"><h4 class="font-bold text-lg">Datos de Envío</h4><input type="text" id="checkName" placeholder="Tu nombre completo" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><input type="text" id="checkAddress" placeholder="Dirección de entrega" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><select id="checkPayment" class="w-full px-4 py-3 rounded-xl border border-sand outline-none bg-white focus:border-fuchsia"><option value="Efectivo">Pago en Efectivo</option><option value="Transferencia">Pago por Transferencia</option></select><textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="w-full px-4 py-3 rounded-xl border border-sand outline-none resize-none focus:border-fuchsia"></textarea><p class="text-xs text-drift italic"><i class="fas fa-truck mr-1"></i> La mensajería se cobra aparte o puede recogerlo en nuestra tienda.</p><button type="button" id="sendWhatsapp" class="w-full py-4 rounded-xl font-bold text-white text-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-2xl"></i> Enviar Pedido por WhatsApp</button></div></div></div>
 
+  <!-- MODAL LOGIN -->
   <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-8 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold mb-4 text-center" style="color:var(--fg)">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Email"><input id="loginPass" type="password" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p><button type="button" id="loginBtn" class="w-full py-4 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Iniciar Sesión</button><button type="button" onclick="window.closeAllModals()" class="w-full py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div>
 
+  <!-- PANEL ADMIN -->
   <div id="adminModal" class="modal-overlay"><div class="modal-box bg-admin text-white flex flex-col md:rounded-2xl shadow-2xl" style="max-width:1000px;width:100%;height:100vh;max-height:100vh;margin:0;"><header class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0"><h2 class="font-display text-xl font-bold text-fuchsia">Panel de Administración</h2><button type="button" onclick="window.closeAllModals()" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center transition"><i class="fas fa-times text-xl"></i></button></header><div class="flex flex-wrap gap-2 p-4 border-b border-gray-700 shrink-0 bg-adminCard/50"><button type="button" onclick="window.showAdminPage('dashboard')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="dashboard"><i class="fas fa-chart-bar mr-1"></i> Inicio</button><button type="button" onclick="window.showAdminPage('sections')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="sections"><i class="fas fa-layer-group mr-1"></i> Secciones</button><button type="button" onclick="window.showAdminPage('products')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="products"><i class="fas fa-boxes-stacked mr-1"></i> Productos</button><button type="button" onclick="window.showAdminPage('appearance')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="appearance"><i class="fas fa-palette mr-1"></i> Apariencia</button><button type="button" onclick="window.showAdminPage('settings')" class="admin-tab px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 transition" data-page="settings"><i class="fas fa-cog mr-1"></i> Config</button></div><div id="adminContent" class="flex-1 overflow-y-auto admin-scroll p-8 md:p-10"></div><footer class="p-4 border-t border-gray-700 shrink-0"><button type="button" id="adminLogout" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl hover:bg-red-900/30 text-red-400 text-lg font-bold transition"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button></footer></div></div>
 
   <div id="toast" class="toast"></div>
 
   <script type="module">
-    // ===== IMPORTACIONES FIREBASE (AÑADIDO STORAGE) =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-    import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-storage.js";
 
     const firebaseConfig = { apiKey: "AIzaSyCHQvXHPyZbiqlhMsoDsSqkjrQ5wATj-Cw", authDomain: "ecosdemoda-40202.firebaseapp.com", projectId: "ecosdemoda-40202", storageBucket: "ecosdemoda-40202.firebasestorage.app", messagingSenderId: "1077783413744", appId: "1:1077783413744:web:bebfb4f7956f6472709335" };
-    
-    const app = initializeApp(firebaseConfig); 
-    const auth = getAuth(app); 
-    const db = getFirestore(app); 
-    const storage = getStorage(app); // Inicializar Storage
+    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
     let storeData = { sections: [] }, isLoggedIn = false, currentAdminPage = 'dashboard', activeSectionTab = -1, adminSelectedSection = 0, cart = [], editingSectionId = null, editingProductId = null, editingProductSectionId = null;
 
@@ -117,8 +114,8 @@
       backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
       whatsappNumber: '53000000', exchangeRate: 300,
       sections: [
-        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, image: 'https://picsum.photos/seed/vela01/400/400' }, { id: 2, name: 'Chocolates', price: 15.50, image: 'https://picsum.photos/seed/choco02/400/400' } ] },
-        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 3, name: 'Set de Copas', price: 25.00, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
+        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, quantity: 15, image: 'https://picsum.photos/seed/vela01/400/400' }, { id: 2, name: 'Chocolates', price: 15.50, quantity: 8, image: 'https://picsum.photos/seed/choco02/400/400' } ] },
+        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 3, name: 'Set de Copas', price: 25.00, quantity: 3, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
       ]
     };
 
@@ -140,43 +137,137 @@
     function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor); document.documentElement.style.setProperty('--fg', storeData.headerColor); document.documentElement.style.setProperty('--accent', storeData.accentColor); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName; document.getElementById('heroTitle').textContent = storeData.heroTitle; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle; document.getElementById('footerName').textContent = storeData.storeName; }
     function formatPrice(p) { return `${p.toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(p * (storeData.exchangeRate || 300)).toLocaleString()} CUP</span>`; }
 
-    /* ========== FIREBASE STORAGE (SUBIR Y BORRAR IMÁGENES) ========== */
-    async function uploadImageToFirebase(file) {
-      try {
-        const timestamp = Date.now();
-        const safeName = file.name.replace(/\s+/g, '_');
-        const imageRef = sRef(storage, `productos/${timestamp}_${safeName}`);
-        const snapshot = await uploadBytes(imageRef, file);
-        const url = await getDownloadURL(snapshot.ref);
-        return url;
-      } catch (error) {
-        console.error("Error subiendo imagen:", error);
-        showToast('Error al subir imagen. Revisa las reglas de Storage.', 'error');
-        return null;
-      }
-    }
+    /* ========== SISTEMA DE IMÁGENES EN MEMORIA (BASE64) ========== */
+    // Evita bloqueos de red, no requiere configurar Firebase Storage. 
+    // Comprime la imagen y la guarda directo en Firestore.
+    function compressAndProcessImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject('Error leyendo archivo');
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onerror = () => reject('La imagen está corrupta');
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 400;
+            const MAX_HEIGHT = 400;
+            let width = img.width;
+            let height = img.height;
 
-    async function deleteImageFromFirebase(imageUrl) {
-      if (!imageUrl || !imageUrl.includes('firebasestorage.googleapis.com')) return; // Solo borra si es de Firebase
-      try {
-        const imageRef = sRef(storage, imageUrl);
-        await deleteObject(imageRef);
-      } catch (error) {
-        console.error("Error eliminando imagen antigua:", error);
-      }
+            if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+            else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convertir a JPEG calidad 0.6 para que ocupe poco espacio en Firestore (aprox 30-60KB)
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            resolve(dataUrl);
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
     }
 
     /* ========== CATÁLOGO ========== */
-    function renderCatalog() { const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; secs.forEach((s, i) => { tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon} mr-1"></i>${s.name}</button>`; }); tC.innerHTML = tH; let pH = ''; const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); showS.forEach(s => { if (!s || !s.products) return; if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon} mr-2" style="color:var(--accent)"></i>${s.name}</h3></div>`; s.products.forEach(p => { pH += `<article class="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-sand/50 flex flex-col"><div class="overflow-hidden h-56"><img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy"></div><div class="p-5 flex flex-col flex-grow"><h4 class="font-display text-lg font-bold mb-1" style="color:var(--fg)">${p.name}</h4><p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price)}</p><div class="mt-auto"><button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button></div></div></article>`; }); }); gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos.</p>'; refreshReveals(); }
+    function renderCatalog() { 
+      const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
+      let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
+      secs.forEach((s, i) => { tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon} mr-1"></i>${s.name}</button>`; }); 
+      tC.innerHTML = tH; 
+      let pH = ''; 
+      const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); 
+      showS.forEach(s => { 
+        if (!s || !s.products) return; 
+        if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon} mr-2" style="color:var(--accent)"></i>${s.name}</h3></div>`; 
+        s.products.forEach(p => { 
+          const qty = p.quantity !== undefined ? p.quantity : 10; // Retrocompatibilidad
+          const isAvailable = qty > 0;
+          pH += `
+            <article class="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-sand/50 flex flex-col">
+              <div class="overflow-hidden h-56 bg-sand/20">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+              </div>
+              <div class="p-5 flex flex-col flex-grow">
+                <h4 class="font-display text-lg font-bold mb-1" style="color:var(--fg)">${p.name}</h4>
+                <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">
+                  ${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disponibles: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}
+                </p>
+                <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price)}</p>
+                <div class="mt-auto">
+                  ${isAvailable 
+                    ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button>`
+                    : `<button type="button" disabled class="w-full py-3 rounded-xl font-bold text-white bg-gray-400 cursor-not-allowed text-base">Agotado</button>`
+                  }
+                </div>
+              </div>
+            </article>`; 
+        }); 
+      }); 
+      gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos.</p>'; 
+      refreshReveals(); 
+    }
     function setActiveTab(i) { activeSectionTab = i; renderCatalog(); }
 
     /* ========== CARRITO ========== */
-    function addToCart(sId, pId) { const s = storeData.sections.find(x => x.id === sId), p = s.products.find(x => x.id === pId), e = cart.find(x => x.id === pId); if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); updateCartBadge(); showToast('Añadido', 'success'); }
+    function addToCart(sId, pId) { 
+      const s = storeData.sections.find(x => x.id === sId), p = s.products.find(x => x.id === pId);
+      const qty = p.quantity !== undefined ? p.quantity : 10;
+      const currentInCart = cart.find(x => x.id === pId)?.quantity || 0;
+
+      if (currentInCart >= qty) {
+        showToast('No hay más unidades disponibles', 'error');
+        return;
+      }
+
+      const e = cart.find(x => x.id === pId); 
+      if (e) e.quantity++; 
+      else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); 
+      updateCartBadge(); 
+      showToast('Añadido al carrito', 'success'); 
+    }
     function removeFromCart(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     function updateQuantity(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
     function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
-    function sendWhatsappOrder() { const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); if (!name || !address) { showToast('Completa nombre y dirección', 'error'); return; } let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n💳 *Pago:* ${payment}\n`; if (notes) msg += `📝 *Notas:* ${notes}\n`; msg += `\n📦 *Productos:*\n`; let total = 0; cart.forEach(i => { const sub = i.price * i.quantity; total += sub; msg += `  • ${i.name} x${i.quantity} — ${sub.toFixed(2)} USD\n`; }); msg += `\n💰 *Total: ${total.toFixed(2)} USD | ${Math.round(total * (storeData.exchangeRate || 300)).toLocaleString()} CUP*`; const phone = (storeData.whatsappNumber || '').replace(/[^0-9]/g, ''); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank'); }
+    
+    function sendWhatsappOrder() { 
+      const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
+      if (!name || !address) { showToast('Completa nombre y dirección', 'error'); return; } 
+      let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n💳 *Pago:* ${payment}\n`; 
+      if (notes) msg += `📝 *Notas:* ${notes}\n`; 
+      msg += `\n📦 *Productos:*\n`; 
+      let total = 0; 
+      cart.forEach(i => { 
+        const sub = i.price * i.quantity; 
+        total += sub; 
+        msg += `  • ${i.name} x${i.quantity} — ${sub.toFixed(2)} USD\n`; 
+        
+        // DESCONTAR INVENTARIO AUTOMÁTICAMENTE AL HACER EL PEDIDO
+        for(let s of storeData.sections) {
+          const p = s.products.find(x => x.id === i.id);
+          if(p) {
+            const currentQty = p.quantity !== undefined ? p.quantity : 10;
+            p.quantity = Math.max(0, currentQty - i.quantity);
+          }
+        }
+      }); 
+      msg += `\n💰 *Total: ${total.toFixed(2)} USD | ${Math.round(total * (storeData.exchangeRate || 300)).toLocaleString()} CUP*`; 
+      
+      // Guardar el inventario actualizado en Firebase
+      saveData();
+      
+      const phone = (storeData.whatsappNumber || '').replace(/[^0-9]/g, ''); 
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+      
+      // Vaciar carrito
+      cart = []; 
+      updateCartBadge(); 
+      closeAllModals();
+    }
 
     /* ========== MODALES Y UTILIDADES ========== */
     function openModal(id) { document.getElementById(id).classList.add('visible'); if (id === 'cartModal') renderCartModal(); }
@@ -199,12 +290,13 @@
     window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección?')) return; storeData.sections = storeData.sections.filter(x => x.id !== id); await saveData(); window.showAdminPage('sections'); };
 
     /* --- PRODUCTOS --- */
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; sec.products.forEach(p => { pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image}" class="w-full h-32 object-cover"><div class="p-4"><h4 class="font-bold truncate">${p.name}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price)}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
+    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; sec.products.forEach(p => { const qty = p.quantity !== undefined ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
 
     window.renderProductForm = function(secId, prodId) {
       editingProductSectionId = secId; editingProductId = prodId;
       const s = storeData.sections.find(x => x.id === secId);
       const p = prodId ? s?.products.find(x => x.id === prodId) : null;
+      const qty = p ? (p.quantity !== undefined ? p.quantity : 10) : 10;
       const content = document.getElementById('adminContent');
       content.innerHTML = `
         <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button>
@@ -214,20 +306,27 @@
             <label class="block text-sm text-gray-400 mb-1">Nombre *</label>
             <input id="pf_name" type="text" value="${p ? p.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
           </div>
-          <div>
-            <label class="block text-sm text-gray-400 mb-1">Precio (USD) *</label>
-            <input id="pf_price" type="text" value="${p ? p.price : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Precio (USD) *</label>
+              <input id="pf_price" type="text" value="${p ? p.price : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
+            </div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Cantidad / Stock *</label>
+              <input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg">
+            </div>
           </div>
           <div>
             <label class="block text-sm text-gray-400 mb-1">Imagen</label>
-            <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-40 object-contain rounded-xl mb-2 bg-gray-800 ${p && p.image ? '' : 'hidden'}">
+            <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-40 object-contain rounded-xl mb-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
             <input id="pf_file" type="file" accept="image/*" class="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
             <input id="pf_image_url" type="hidden" value="${p ? p.image : ''}">
+            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Se comprimirá automáticamente para guardar espacio.</p>
           </div>
           <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar Producto</button>
         </div>`;
       
-      // Previsualizar imagen localmente antes de subir
+      // Previsualizar imagen localmente antes de guardar
       setTimeout(() => {
         const fileInput = document.getElementById('pf_file');
         if(fileInput) {
@@ -250,6 +349,7 @@
       const name = document.getElementById('pf_name').value.trim();
       let priceStr = document.getElementById('pf_price').value.replace(',', '.');
       const price = parseFloat(priceStr);
+      const quantity = parseInt(document.getElementById('pf_quantity').value) || 0;
       const file = document.getElementById('pf_file').files[0];
       const btn = document.getElementById('saveProductBtn');
 
@@ -258,22 +358,19 @@
 
       let imageUrl = document.getElementById('pf_image_url').value;
 
-      // Si seleccionó un archivo nuevo, subir a Firebase Storage
+      // Si seleccionó un archivo nuevo, comprimir y preparar
       if (file) {
         btn.disabled = true; 
-        btn.innerHTML = '<span class="upload-spinner mr-2"></span> Subiendo imagen...';
+        btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando imagen...';
         
-        const newUrl = await uploadImageToFirebase(file);
-        if (newUrl) {
-          // Si ya había imagen de Firebase, la borramos para no llenar el almacenamiento
-          if (editingProductId && imageUrl && imageUrl.includes('firebasestorage.googleapis.com')) {
-            await deleteImageFromFirebase(imageUrl);
-          }
-          imageUrl = newUrl;
-        } else {
+        try {
+          imageUrl = await compressAndProcessImage(file);
+        } catch (error) {
+          console.error(error);
+          showToast('Error al procesar la imagen', 'error');
           btn.disabled = false; 
           btn.innerHTML = 'Guardar Producto';
-          return; // Detener si falla la subida
+          return;
         }
       }
 
@@ -282,9 +379,9 @@
 
       if (editingProductId) {
         const p = s.products.find(x => x.id === editingProductId);
-        if (p) { p.name = name; p.price = price; p.image = imageUrl; }
+        if (p) { p.name = name; p.price = price; p.quantity = quantity; p.image = imageUrl; }
       } else {
-        s.products.push({ id: Date.now(), name, price, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` });
+        s.products.push({ id: Date.now(), name, price, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` });
       }
       
       await saveData();
@@ -293,16 +390,8 @@
     };
 
     window.deleteProduct = async function(secId, prodId) {
-      if (!confirm('¿Eliminar producto y su imagen del servidor?')) return;
+      if (!confirm('¿Eliminar este producto?')) return;
       const s = storeData.sections.find(x => x.id === secId);
-      const p = s?.products.find(x => x.id === prodId);
-      
-      // Borrar imagen de Firebase Storage si existe
-      if (p && p.image && p.image.includes('firebasestorage.googleapis.com')) {
-        showToast('Eliminando imagen...', 'info');
-        await deleteImageFromFirebase(p.image);
-      }
-      
       s.products = s.products.filter(x => x.id !== prodId);
       await saveData();
       showToast('Producto eliminado', 'success');
