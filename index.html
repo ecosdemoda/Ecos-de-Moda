@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -99,7 +98,7 @@
     <div class="modal-box bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
       <h3 class="font-display text-2xl font-bold text-bark mb-4 text-center">Acceso Administrador</h3>
       <div class="space-y-4">
-        <input id="loginUser" type="email" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="Email">
+        <input id="loginUser" type="email" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="Email de admin">
         <input id="loginPass" type="password" class="w-full px-4 py-3 rounded-xl border border-sand outline-none" placeholder="Contraseña">
         <p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p>
         <button id="loginBtn" class="w-full py-3 rounded-xl font-bold text-white" style="background:var(--accent)">Iniciar Sesión</button>
@@ -167,28 +166,29 @@
 
   <div id="toast" class="toast"></div>
 
+  <!-- CÓDIGO FIREBASE Y LÓGICA CON TUS CLAVES YA PUESTAS -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // 1. Importar Firebase (Versión 12.14.0)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-    
-    
-const firebaseConfig = {
-  apiKey: "AIzaSyBPdQbNkhhKPFmf1kU3wE8-kXkl7O5-NMc",
-  authDomain: "ecosdemoda-b85a9.firebaseapp.com",
-  projectId: "ecosdemoda-b85a9",
-  storageBucket: "ecosdemoda-b85a9.firebasestorage.app",
-  messagingSenderId: "683006779672",
-  appId: "1:683006779672:web:d2eca01626dbc780c43e6d"
-  measurementId: "G-WMP28WN1JG"
-};
+    // 2. Tu configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHQvXHPyZbiqlhMsoDsSqkjrQ5wATj-Cw",
+      authDomain: "ecosdemoda-40202.firebaseapp.com",
+      projectId: "ecosdemoda-40202",
+      storageBucket: "ecosdemoda-40202.firebasestorage.app",
+      messagingSenderId: "1077783413744",
+      appId: "1:1077783413744:web:bebfb4f7956f6472709335"
     };
 
+    // 3. Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Estado de la app
     let storeData = { sections: [] };
     let isLoggedIn = false;
     let currentAdminPage = 'dashboard';
@@ -218,7 +218,7 @@ const firebaseConfig = {
         if (document.getElementById('adminPanel').classList.contains('open')) window.showAdminPage(currentAdminPage);
       });
     }
-    async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error al guardar en la nube', 'error'); } }
+    async function saveData() { try { await setDoc(doc(db, "store", "data"), storeData); } catch (e) { showToast('Error al guardar en la nube: ' + e.message, 'error'); } }
 
     /* === AUTENTICACIÓN === */
     function initAuth() {
@@ -391,10 +391,8 @@ const firebaseConfig = {
       document.getElementById('pm_save').addEventListener('click', window.saveProduct);
       document.getElementById('sm_save').addEventListener('click', window.saveSection);
       document.getElementById('pm_imageUrl').addEventListener('input', function() { document.getElementById('pm_preview').innerHTML = this.value.trim() ? `<img src="${this.value}" class="w-full h-full object-cover">` : '<span class="text-drift text-sm">Vista previa</span>'; });
-      document.getElementById('contactForm')?.addEventListener('submit', (e) => { e.preventDefault(); showToast('Mensaje enviado', 'success'); });
       window.addEventListener('scroll', () => { document.getElementById('mainNav').classList.toggle('nav-scrolled', window.scrollY > 80); });
     });
   </script>
 </body>
-</html>
-```
+  </html>
