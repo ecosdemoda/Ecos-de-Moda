@@ -92,7 +92,30 @@
 
   <div id="lightbox" onclick="if(event.target===this)window.closeLightbox()"><button class="absolute top-4 right-4 text-white text-3xl" onclick="window.closeLightbox()">&times;</button><img id="lightboxImg" src="" alt=""></div>
 
-  <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white p-6 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="font-display text-xl font-bold" style="color:var(--fg)">Mi Carrito</h3><button type="button" onclick="window.closeAllModals()" class="text-drift text-xl"><i class="fas fa-times"></i></button></div><div id="cartItems" class="space-y-4 mb-6"></div><div id="checkoutForm" class="space-y-3 border-t border-sand pt-4 hidden"><h4 class="font-bold text-base">Datos de Envío</h4><input type="text" id="checkName" placeholder="Tu nombre completo" class="admin-input border-sand bg-white text-charcoal"><input type="text" id="checkAddress" placeholder="Dirección de entrega" class="admin-input border-sand bg-white text-charcoal"><select id="checkPayment" class="admin-input border-sand bg-white text-charcoal"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option></select><textarea id="checkNotes" rows="2" placeholder="Notas (opcional)" class="admin-input border-sand bg-white text-charcoal" style="resize:none;"></textarea><p class="text-xs text-drift italic"><i class="fas fa-truck mr-1"></i> Mensajería se cobra aparte.</p><button type="button" id="sendWhatsapp" class="w-full py-3 rounded-xl font-bold text-white text-base bg-green-600 active:scale-95 transition flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-xl"></i> Enviar Pedido</button></div></div></div>
+  <!-- CARRITO ACTUALIZADO -->
+  <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white p-6 shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-display text-xl font-bold" style="color:var(--fg)">Mi Carrito</h3>
+      <button type="button" onclick="window.closeAllModals()" class="text-drift text-xl"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="cartItems" class="space-y-4 mb-6"></div>
+    <div id="checkoutForm" class="space-y-3 border-t border-sand pt-4 hidden">
+      <h4 class="font-bold text-base">Datos de Envío</h4>
+      <input type="text" id="checkName" placeholder="Tu nombre completo" class="admin-input border-sand bg-white text-charcoal">
+      <input type="tel" id="checkPhone" placeholder="Número de teléfono" class="admin-input border-sand bg-white text-charcoal">
+      <input type="text" id="checkAddress" placeholder="Dirección de entrega" class="admin-input border-sand bg-white text-charcoal">
+      <select id="checkMunicipality" class="admin-input border-sand bg-white text-charcoal">
+        <option value="">Selecciona el municipio</option>
+      </select>
+      <select id="checkPayment" class="admin-input border-sand bg-white text-charcoal">
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+      </select>
+      <textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="admin-input border-sand bg-white text-charcoal" style="resize:none;"></textarea>
+      <div id="cartTotalSummary" class="text-right pt-2"></div>
+      <button type="button" id="sendWhatsapp" class="w-full py-3 rounded-xl font-bold text-white text-base bg-green-600 active:scale-95 transition flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-xl"></i> Enviar Pedido</button>
+    </div>
+  </div></div>
 
   <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white p-8 shadow-2xl"><h3 class="font-display text-xl font-bold mb-4 text-center" style="color:var(--fg)">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="admin-input border-sand bg-white text-charcoal" placeholder="Email"><input id="loginPass" type="password" class="admin-input border-sand bg-white text-charcoal" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p><button type="button" id="loginBtn" class="w-full py-3 rounded-xl font-bold text-white text-base active:scale-95 transition" style="background:var(--accent)">Iniciar Sesión</button><button type="button" onclick="window.closeAllModals()" class="w-full py-3 rounded-xl font-bold text-drift border border-sand text-base">Cancelar</button></div></div></div>
 
@@ -136,13 +159,23 @@
       storeName: 'Ecos de Moda', heroSubtitle: 'Tienda de Regalos', heroTitle: 'Ecos de Moda',
       backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
       whatsappNumber: '53000000', exchangeRate: 300,
+      shippingZones: [
+        { name: 'Habana Vieja', cost: 300 },
+        { name: 'Centro Habana', cost: 300 },
+        { name: 'Playa', cost: 500 }
+      ],
       sections: [
         { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', priceCUP: 3000, quantity: 5, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
         { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', priceCUP: 7500, quantity: 2, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
       ]
     };
 
-    function sanitizeData() { if (!storeData.sections) storeData.sections = []; storeData.exchangeRate = Number(storeData.exchangeRate) || 300; storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; p.quantity = Number(p.quantity) || 10; }); }); }
+    function sanitizeData() { 
+      if (!storeData.sections) storeData.sections = []; 
+      if (!storeData.shippingZones) storeData.shippingZones = [];
+      storeData.exchangeRate = Number(storeData.exchangeRate) || 300; 
+      storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; p.quantity = Number(p.quantity) || 10; }); }); 
+    }
 
     function initDatabase() { 
       onSnapshot(doc(db, "store", "data"), (d) => { 
@@ -165,7 +198,6 @@
       }); 
     }
     
-    // FUNCIÓN MEJORADA: Ahora lanza error si falla para que no parezca que se guardó
     async function saveData() { 
       try { 
         const payload = JSON.parse(JSON.stringify(storeData));
@@ -176,7 +208,7 @@
       } catch (e) { 
         console.error("Error al guardar en Firebase:", e); 
         showToast('Error al guardar en la nube. Verifica tu conexión o reduce el tamaño de las imágenes.', 'error'); 
-        throw e; // Lanza el error para que la función que lo llamó sepa que falló
+        throw e; 
       } 
     }
 
@@ -188,7 +220,6 @@
     function getUSD(priceCUP) { return Number(priceCUP) / (Number(storeData.exchangeRate) || 300); }
     function formatPrice(priceCUP) { return `${getUSD(priceCUP).toFixed(2)} USD <span class="text-xs text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; }
 
-    // COMPRESIÓN MEJORADA: Máximo 400px y 150KB para no romper el límite de 1MB de Firebase
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -276,20 +307,64 @@
     window.removeFromCart = function(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     window.updateQuantity = function(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-3 items-center border-b border-sand pb-3"><img src="${i.image || ''}" class="w-14 h-14 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold text-sm">${i.name || ''}</h4><p class="text-xs" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">-</button><span class="font-bold w-4 text-center text-sm">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-lg">Total: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
+    
+    function renderCartModal() { 
+      const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); 
+      if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } 
+      let h = '', tCUP = 0; 
+      cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-3 items-center border-b border-sand pb-3"><img src="${i.image || ''}" class="w-14 h-14 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold text-sm">${i.name || ''}</h4><p class="text-xs" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">-</button><span class="font-bold w-4 text-center text-sm">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">+</button></div></div>`; }); 
+      cI.innerHTML = h; 
+      
+      // Llenar municipios
+      const sel = document.getElementById('checkMunicipality');
+      sel.innerHTML = '<option value="">Selecciona el municipio</option>';
+      (storeData.shippingZones || []).forEach(z => {
+        sel.innerHTML += `<option value="${z.name}" data-cost="${z.cost}">${z.name} (+${Math.round(z.cost).toLocaleString()} CUP)</option>`;
+      });
+
+      // Calcular y mostrar totales
+      function updateTotalDisplay() {
+        const selectedOption = sel.options[sel.selectedIndex];
+        const shippingCost = Number(selectedOption.dataset.cost) || 0;
+        const totalCUP = tCUP + shippingCost;
+        document.getElementById('cartTotalSummary').innerHTML = `
+          <p class="text-xs text-drift">Productos: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</p>
+          ${shippingCost > 0 ? `<p class="text-xs text-drift"><i class="fas fa-truck mr-1"></i>Mensajería: ${getUSD(shippingCost).toFixed(2)} USD | ${Math.round(shippingCost).toLocaleString()} CUP</p>` : ''}
+          <p class="font-bold text-lg mt-1" style="color:var(--accent)">Total: ${getUSD(totalCUP).toFixed(2)} USD | ${Math.round(totalCUP).toLocaleString()} CUP</p>
+        `;
+      }
+      sel.onchange = updateTotalDisplay;
+      updateTotalDisplay();
+
+      cF.classList.remove('hidden'); 
+    }
     
     function sendWhatsappOrder() { 
-      const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
-      if (!name || !address) { showToast('Completa nombre y dirección', 'error'); return; } 
-      let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n💳 *Pago:* ${payment}\n`; 
-      if (notes) msg += `📝 *Notas:* ${notes}\n`; msg += `\n📦 *Productos:*\n`; 
+      const name = document.getElementById('checkName').value.trim(); 
+      const phone = document.getElementById('checkPhone').value.trim();
+      const address = document.getElementById('checkAddress').value.trim();
+      const muniSelect = document.getElementById('checkMunicipality');
+      const municipality = muniSelect.value;
+      const shippingCost = Number(muniSelect.options[muniSelect.selectedIndex].dataset.cost) || 0;
+      const payment = document.getElementById('checkPayment').value; 
+      const notes = document.getElementById('checkNotes').value.trim(); 
+      
+      if (!name || !phone || !address || !municipality) { showToast('Completa nombre, teléfono, dirección y municipio', 'error'); return; } 
+      
+      let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📞 *Teléfono:* ${phone}\n📍 *Dirección:* ${address}, ${municipality}\n💳 *Pago:* ${payment}\n`; 
+      if (notes) msg += `📝 *Notas:* ${notes}\n`; 
+      msg += `\n📦 *Productos:*\n`; 
+      
       let tCUP = 0; 
       cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; 
         for(let s of storeData.sections) { const p = s.products.find(x => x.id === i.id); if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 0) - i.quantity); } } 
       }); 
-      msg += `\n💰 *Total: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP*`; 
       
-      // Intentamos actualizar el inventario, pero mandamos el WhatsApp de todas formas
+      const totalCUP = tCUP + shippingCost;
+      
+      msg += `\n🚚 *Mensajería a ${municipality}:* ${getUSD(shippingCost).toFixed(2)} USD | ${Math.round(shippingCost).toLocaleString()} CUP\n`;
+      msg += `\n💰 *Total Final:* ${getUSD(totalCUP).toFixed(2)} USD | ${Math.round(totalCUP).toLocaleString()} CUP`; 
+      
       saveData().catch(e => console.error("Error actualizando inventario en pedido:", e));
       window.open(`https://wa.me/${(storeData.whatsappNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank'); 
       cart = []; updateCartBadge(); closeAllModals(); 
@@ -314,23 +389,13 @@
       if (!name) { showToast('Nombre obligatorio', 'error'); return; } 
       if (editingSectionId) { const s = storeData.sections.find(x => x.id === Number(editingSectionId)); if (s) { s.name = name; s.icon = icon; } } 
       else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } 
-      try {
-        await saveData(); 
-        showToast('Sección guardada en la nube', 'success'); 
-        window.showAdminPage('sections');
-      } catch(e) {
-        // El error ya se mostró, mantenemos al usuario en la pantalla
-      }
+      try { await saveData(); showToast('Sección guardada en la nube', 'success'); window.showAdminPage('sections'); } catch(e) {}
     };
 
     window.deleteSection = async function(id) { 
       if (!confirm('¿Eliminar sección y sus productos?')) return; 
       storeData.sections = storeData.sections.filter(x => x.id !== Number(id)); 
-      try {
-        await saveData(); 
-        showToast('Eliminada', 'success');
-        window.showAdminPage('sections');
-      } catch(e) {} 
+      try { await saveData(); showToast('Eliminada', 'success'); window.showAdminPage('sections'); } catch(e) {} 
     };
 
     function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-8 text-gray-400"><p class="text-sm">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-3 px-4 py-2 rounded-lg bg-gray-700 font-bold text-xs">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || ''}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-24 object-cover bg-sand/20"><div class="p-3"><h4 class="font-bold text-xs truncate">${p.name || ''}</h4><p class="text-fuchsia text-xs">${formatPrice(p.priceCUP || 0)}</p><p class="text-[10px] mt-1 ${(Number(p.quantity)||0) > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${Number(p.quantity)||0}</p><div class="flex gap-2 mt-2"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-1.5 rounded-lg bg-gray-700 font-bold text-[11px]">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-1.5 rounded-lg bg-red-900/30 text-red-400 font-bold text-[11px]">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-3 mb-4"><select id="adminSectionSelect" class="admin-input text-sm">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-4 py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-2 gap-3">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
@@ -367,7 +432,6 @@
       setTimeout(() => { const f = document.getElementById('pf_file'); if(f) f.onchange = (e) => { const file = e.target.files[0]; if (file) { const r = new FileReader(); r.onload = (ev) => { document.getElementById('pf_img_preview').src = ev.target.result; document.getElementById('pf_img_preview').classList.remove('hidden'); }; r.readAsDataURL(file); } }; }, 50);
     };
 
-    // GUARDADO SEGURO: Solo muestra éxito si Firebase confirmó el guardado
     window.saveProduct = async function() {
       const name = document.getElementById('pf_name').value.trim(); 
       const priceCUP = Number(document.getElementById('pf_priceCUP').value) || 0; 
@@ -382,58 +446,75 @@
       if (file) { 
         btn.disabled = true; 
         btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando...'; 
-        try { 
-          imageUrl = await compressAndProcessImage(file); 
-        } catch (e) { 
-          showToast('Error al procesar la imagen', 'error'); 
-          btn.disabled = false; 
-          btn.innerHTML = 'Guardar Producto'; 
-          return; 
-        } 
+        try { imageUrl = await compressAndProcessImage(file); } catch (e) { showToast('Error al procesar la imagen', 'error'); btn.disabled = false; btn.innerHTML = 'Guardar Producto'; return; } 
       }
       
-      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId)); 
-      if (!s) return; 
-      if (!s.products) s.products = [];
+      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId)); if (!s) return; if (!s.products) s.products = [];
+      if (editingProductId) { const p = s.products.find(x => x.id === Number(editingProductId)); if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; delete p.price; } } 
+      else { s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` }); }
       
-      if (editingProductId) { 
-        const p = s.products.find(x => x.id === Number(editingProductId)); 
-        if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; delete p.price; } 
-      } else { 
-        s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` }); 
-      }
-      
-      try {
-        await saveData(); 
-        showToast('¡Producto guardado en la nube!', 'success'); 
-        window.showAdminPage('products'); 
-        renderCatalog(); 
-      } catch (e) {
-        // Si saveData falla, ya mostró el error. No cerramos la ventana para que no pierda los datos.
-        btn.disabled = false; 
-        btn.innerHTML = 'Guardar Producto';
-      }
+      try { await saveData(); showToast('¡Producto guardado en la nube!', 'success'); window.showAdminPage('products'); renderCatalog(); } catch (e) { btn.disabled = false; btn.innerHTML = 'Guardar Producto'; }
     };
 
     window.deleteProduct = async function(secId, prodId) { 
       if (!confirm('¿Eliminar?')) return; 
       const s = storeData.sections.find(x => x.id === Number(secId)); 
-      if (s && s.products) { 
-        s.products = s.products.filter(x => x.id !== Number(prodId)); 
-        try {
-          await saveData(); 
-          showToast('Eliminado', 'success'); 
-          renderProductList(document.getElementById('adminContent')); 
-          renderCatalog(); 
-        } catch(e) {}
-      } 
+      if (s && s.products) { s.products = s.products.filter(x => x.id !== Number(prodId)); try { await saveData(); showToast('Eliminado', 'success'); renderProductList(document.getElementById('adminContent')); renderCatalog(); } catch(e) {} } 
     };
 
     function renderAppearance(el) { el.innerHTML = `<div class="space-y-4"><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-xs text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="admin-input"></div><div class="grid grid-cols-3 gap-3"><div><label class="block text-xs text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar</button></div>`; }
     window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; try { await saveData(); showToast('Aspecto guardado', 'success'); } catch(e) {} };
 
-    function renderSettings(el) { el.innerHTML = `<div class="space-y-4"><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-xs text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="admin-input"></div></div><button type="button" onclick="window.saveSettings()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar</button></div>`; }
-    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; try { await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); } catch(e) {} };
+    // CONFIGURACIÓN MEJORADA (MUNICIPIOS)
+    function renderSettings(el) { 
+      let zonesHtml = '';
+      (storeData.shippingZones || []).forEach((z, i) => {
+        zonesHtml += `<div class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg">
+          <span class="flex-1 text-sm font-medium">${z.name || ''}</span>
+          <span class="text-fuchsia font-bold text-sm">${Math.round(z.cost || 0).toLocaleString()} CUP</span>
+          <button type="button" onclick="window.removeShippingZone(${i})" class="text-red-400 text-xs p-1 hover:text-red-300"><i class="fas fa-trash"></i></button>
+        </div>`;
+      });
+
+      el.innerHTML = `<div class="space-y-4">
+        <div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4">
+          <h3 class="font-display text-sm font-bold text-fuchsia">Ventas y WhatsApp</h3>
+          <div><label class="block text-xs text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="admin-input"></div>
+          <div><label class="block text-xs text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="admin-input"></div>
+        </div>
+        
+        <div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4">
+          <h3 class="font-display text-sm font-bold text-fuchsia"><i class="fas fa-truck mr-2"></i>Municipios y Mensajería</h3>
+          <div id="shippingZonesList" class="space-y-2 max-h-40 overflow-y-auto admin-scroll">${zonesHtml || '<p class="text-xs text-gray-500 text-center py-2">No hay municipios configurados</p>'}</div>
+          <div class="flex gap-2">
+            <input id="sz_name" type="text" placeholder="Municipio" class="admin-input flex-1 text-sm py-2">
+            <input id="sz_cost" type="number" placeholder="Costo CUP" class="admin-input w-28 text-sm py-2">
+          </div>
+          <button type="button" onclick="window.addShippingZone()" class="w-full py-2 rounded-lg bg-gray-700 font-bold text-xs active:scale-95 transition">Añadir Municipio</button>
+        </div>
+
+        <button type="button" onclick="window.saveSettings()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar Configuración</button>
+      </div>`; 
+    }
+
+    window.addShippingZone = async function() {
+      const name = document.getElementById('sz_name').value.trim();
+      const cost = Number(document.getElementById('sz_cost').value) || 0;
+      if (!name) { showToast('Escribe el nombre del municipio', 'error'); return; }
+      storeData.shippingZones.push({ name, cost });
+      try { await saveData(); showToast('Municipio añadido', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
+    }
+
+    window.removeShippingZone = async function(index) {
+      storeData.shippingZones.splice(index, 1);
+      try { await saveData(); showToast('Municipio eliminado', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
+    }
+
+    window.saveSettings = async function() { 
+      storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); 
+      storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; 
+      try { await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); } catch(e) {} 
+    };
 
     // DECLARACIONES GLOBALES
     window.closeAllModals = closeAllModals;
