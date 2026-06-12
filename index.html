@@ -27,34 +27,19 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
     .font-display { font-family: 'Playfair Display', serif; }
-
-    /* BURBUJAS FLOTANTES - LOGO ENTERO DENTRO */
     .float-shape {
       position: absolute; border-radius: 50%; pointer-events: none;
       animation: floatUp 8s ease-in-out infinite;
-      background: rgba(255,255,255,0.15); 
-      backdrop-filter: blur(6px); 
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       box-shadow: 0 8px 32px rgba(233, 30, 140, 0.25), inset 0 0 20px rgba(255,255,255,0.3);
-      display: flex; align-items: center; justify-content: center; 
-      padding: 0; 
-      border: 1px solid rgba(255,255,255,0.4);
-      overflow: hidden; 
+      display: flex; align-items: center; justify-content: center; padding: 0; border: 1px solid rgba(255,255,255,0.4); overflow: hidden;
     }
-    .float-shape img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: contain; /* Muestra el logo COMPLETO sin recortar */
-      object-position: center center; /* Centrado perfecto */
-      background: white; /* Rellena el espacio vacío de la esfera en blanco */
-      box-shadow: 0 4px 15px rgba(233, 30, 140, 0.2);
-    }
+    .float-shape img { width: 100%; height: 100%; object-fit: contain; background: white; box-shadow: 0 4px 15px rgba(233, 30, 140, 0.2); }
     .float-shape:nth-child(1) { animation-delay: 0s; animation-duration: 8s; }
     .float-shape:nth-child(2) { animation-delay: -2s; animation-duration: 10s; }
     .float-shape:nth-child(3) { animation-delay: -4s; animation-duration: 12s; }
     .float-shape:nth-child(4) { animation-delay: -1s; animation-duration: 9s; }
     @keyframes floatUp { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
-
     .product-card { transition: transform 0.3s, box-shadow 0.3s; }
     .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(233, 30, 140, 0.15); }
     .tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; cursor: pointer; }
@@ -89,21 +74,10 @@
 
   <main id="publicSite">
     <section id="heroSection" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-      
-      <!-- BURBUJAS CON LOGO ENTERO (SIN RECORTES) -->
-      <div class="float-shape w-28 h-28 md:w-40 md:h-40" style="top:12%;left:8%">
-        <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo Ecos de Moda">
-      </div>
-      <div class="float-shape w-24 h-24 md:w-32 md:h-32" style="top:60%;left:12%">
-        <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo Ecos de Moda">
-      </div>
-      <div class="float-shape w-32 h-32 md:w-44 md:h-44" style="top:25%;right:25%">
-        <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo Ecos de Moda">
-      </div>
-      <div class="float-shape w-20 h-20 md:w-28 md:h-28" style="bottom:15%;right:10%">
-        <img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo Ecos de Moda">
-      </div>
-
+      <div class="float-shape w-28 h-28 md:w-40 md:h-40" style="top:12%;left:8%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
+      <div class="float-shape w-24 h-24 md:w-32 md:h-32" style="top:60%;left:12%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
+      <div class="float-shape w-32 h-32 md:w-44 md:h-44" style="top:25%;right:25%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
+      <div class="float-shape w-20 h-20 md:w-28 md:h-28" style="bottom:15%;right:10%"><img src="https://z-cdn-media.chatglm.cn/files/00165490-09ba-476b-8213-a55280ab9cf5.png?auth_key=1881213438-878015b3a93b4587bb9d129ef94e5d62-0-5bda42e0e4ad5b6736548e65ba4b023e" alt="Logo"></div>
       <div class="relative z-10 text-center px-6 max-w-4xl">
         <p id="heroSubtitle" class="text-fuchsia uppercase tracking-[0.4em] text-sm mb-4 font-bold">Tienda de Regalos</p>
         <h1 id="heroTitle" class="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-tight mb-8" style="color:var(--fg)">Ecos de Moda</h1>
@@ -143,8 +117,8 @@
       backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
       whatsappNumber: '53000000', exchangeRate: 300,
       sections: [
-        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', price: 10.00, quantity: 15, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
-        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', price: 25.00, quantity: 3, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
+        { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', priceCUP: 3000, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
+        { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', priceCUP: 7500, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
       ]
     };
 
@@ -152,12 +126,30 @@
     function setupRevealObserver() { if (revealObserver) revealObserver.disconnect(); revealObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }); }, { threshold: 0.1 }); document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el)); }
     function refreshReveals() { requestAnimationFrame(() => setupRevealObserver()); }
 
+    // LIMPIEZA DE DATOS: Fuerza a números y arregla productos viejos
+    function sanitizeData() {
+      if (!storeData.sections) storeData.sections = [];
+      storeData.exchangeRate = Number(storeData.exchangeRate) || 300;
+      storeData.sections.forEach(s => {
+        if (!s.products) s.products = [];
+        s.id = Number(s.id);
+        s.products.forEach(p => {
+          p.id = Number(p.id);
+          // Migración: si existe el viejo "price" en USD, pasarlo a CUP
+          if (p.price !== undefined && p.priceCUP === undefined) {
+            p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300));
+            delete p.price;
+          }
+          p.priceCUP = Number(p.priceCUP) || 0;
+        });
+      });
+    }
+
     function initDatabase() { 
       onSnapshot(doc(db, "store", "data"), (d) => { 
         if (d.exists()) { 
           storeData = d.data(); 
-          if (!storeData.sections) storeData.sections = []; 
-          storeData.sections.forEach(s => { if (!s.products) s.products = []; });
+          sanitizeData(); // Siempre limpiar al leer
         } else { 
           storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
           saveData(); 
@@ -167,11 +159,8 @@
         if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); 
       }, (error) => {
         console.error("Error Firebase:", error);
-        if (error.code === 'permission-denied') {
-          showToast('Error: Permisos de Firebase. Configura reglas.', 'error');
-        } else {
-          showToast('Error de red o VPN requerida.', 'error');
-        }
+        if (error.code === 'permission-denied') showToast('Error: Permisos de Firebase', 'error');
+        else showToast('Error de red o VPN', 'error');
       }); 
     }
     
@@ -181,13 +170,8 @@
         await setDoc(doc(db, "store", "data"), cleanData); 
       } catch (e) { 
         console.error("Error al guardar:", e);
-        if (e.message.includes("maximum size") || e.code === 'resource-exhausted') {
-          showToast('Error: Base de datos llena. Sube imágenes más ligeras.', 'error');
-        } else if (e.code === 'permission-denied') {
-          showToast('Error: Sin permiso para guardar.', 'error');
-        } else {
-          showToast('Error al guardar cambios.', 'error'); 
-        }
+        if (e.message.includes("maximum size")) showToast('Base de datos llena', 'error');
+        else showToast('Error al guardar', 'error'); 
       } 
     }
 
@@ -196,7 +180,13 @@
     async function handleLogout() { await signOut(auth); closeAllModals(); }
 
     function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor || '#FFFAFC'); document.documentElement.style.setProperty('--fg', storeData.headerColor || '#1A1A1A'); document.documentElement.style.setProperty('--accent', storeData.accentColor || '#E91E8C'); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName || 'Ecos de Moda'; document.getElementById('heroTitle').textContent = storeData.heroTitle || 'Ecos de Moda'; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle || 'Tienda de Regalos'; document.getElementById('footerName').textContent = storeData.storeName || 'Ecos de Moda'; }
-    function formatPrice(p) { return `${(p || 0).toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round((p || 0) * (storeData.exchangeRate || 300)).toLocaleString()} CUP</span>`; }
+    
+    // PRECIO: CUP → USD automático
+    function getUSD(priceCUP) { const rate = Number(storeData.exchangeRate) || 300; return Number(priceCUP) / rate; }
+    function formatPrice(priceCUP) { 
+      const usd = getUSD(priceCUP); 
+      return `${usd.toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; 
+    }
 
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
@@ -207,17 +197,11 @@
           img.onerror = () => reject('La imagen está corrupta');
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 250; 
-            const MAX_HEIGHT = 250;
-            let width = img.width, height = img.height;
-            if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
-            else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.4);
-            resolve(dataUrl);
+            const MAX = 250; let w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.4));
           };
           img.src = event.target.result;
         };
@@ -227,6 +211,9 @@
 
     function renderCatalog() { 
       try {
+        // Resetear tab si se borró la sección activa
+        if (activeSectionTab >= storeData.sections.length) activeSectionTab = -1;
+
         const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
         let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
         secs.forEach((s, i) => { 
@@ -242,7 +229,7 @@
           if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon || ''} mr-2" style="color:var(--accent)"></i>${s.name || ''}</h3></div>`; 
           s.products.forEach(p => { 
             if(!p) return;
-            const qty = p.quantity != null ? p.quantity : 10; 
+            const qty = Number(p.quantity) || 10; 
             const isAvailable = qty > 0;
             const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
             pH += `
@@ -255,7 +242,7 @@
                   <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-500'} font-semibold mb-1">
                     ${isAvailable ? `<i class="fas fa-check-circle mr-1"></i>Disponibles: ${qty}` : '<i class="fas fa-times-circle mr-1"></i>Agotado'}
                   </p>
-                  <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.price)}</p>
+                  <p class="text-xl font-bold mb-4" style="color:var(--accent)">${formatPrice(p.priceCUP || 0)}</p>
                   <div class="mt-auto">
                     ${isAvailable 
                       ? `<button type="button" onclick="window.addToCart(${s.id}, ${p.id})" class="w-full py-3 rounded-xl font-bold text-white transition-all hover:shadow-lg text-base" style="background:var(--accent)"><i class="fas fa-bag-shopping mr-2"></i>Agregar</button>`
@@ -268,31 +255,29 @@
         }); 
         gC.innerHTML = pH || '<p class="col-span-full text-center text-drift py-12">No hay productos disponibles.</p>'; 
         refreshReveals(); 
-      } catch(e) {
-        console.error("Error al renderizar:", e);
-      }
+      } catch(e) { console.error("Error render:", e); }
     }
     
     function setActiveTab(i) { activeSectionTab = i; renderCatalog(); }
 
     function addToCart(sId, pId) { 
-      const s = storeData.sections.find(x => x.id === sId); 
+      const s = storeData.sections.find(x => x.id === Number(sId)); 
       if(!s) return;
-      const p = s.products.find(x => x.id === pId); 
+      const p = s.products.find(x => x.id === Number(pId)); 
       if(!p) return;
-      const qty = p.quantity != null ? p.quantity : 10;
-      const currentInCart = cart.find(x => x.id === pId)?.quantity || 0;
-      if (currentInCart >= qty) { showToast('No hay más unidades disponibles', 'error'); return; }
-      const e = cart.find(x => x.id === pId); 
+      const qty = Number(p.quantity) || 10;
+      const currentInCart = cart.find(x => x.id === p.id)?.quantity || 0;
+      if (currentInCart >= qty) { showToast('No hay más unidades', 'error'); return; }
+      const e = cart.find(x => x.id === p.id); 
       if (e) e.quantity++; 
-      else cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, quantity: 1 }); 
+      else cart.push({ id: p.id, name: p.name, priceCUP: Number(p.priceCUP) || 0, image: p.image, quantity: 1 }); 
       updateCartBadge(); 
       showToast('Añadido al carrito', 'success'); 
     }
     function removeFromCart(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     function updateQuantity(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tU = 0; cart.forEach(i => { tU += i.price * i.quantity; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.price)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tU.toFixed(2)} USD | ${Math.round(tU * (storeData.exchangeRate || 300)).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
+    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); const tUSD = getUSD(tCUP); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tUSD.toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
     
     function sendWhatsappOrder() { 
       const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
@@ -300,16 +285,17 @@
       let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n💳 *Pago:* ${payment}\n`; 
       if (notes) msg += `📝 *Notas:* ${notes}\n`; 
       msg += `\n📦 *Productos:*\n`; 
-      let total = 0; 
+      let tCUP = 0; 
       cart.forEach(i => { 
-        const sub = i.price * i.quantity; total += sub; 
-        msg += `  • ${i.name} x${i.quantity} — ${sub.toFixed(2)} USD\n`; 
+        const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; 
+        msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; 
         for(let s of storeData.sections) { 
           const p = s.products.find(x => x.id === i.id); 
-          if(p) { const currentQty = p.quantity != null ? p.quantity : 10; p.quantity = Math.max(0, currentQty - i.quantity); } 
+          if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 10) - i.quantity); } 
         } 
       }); 
-      msg += `\n💰 *Total: ${total.toFixed(2)} USD | ${Math.round(total * (storeData.exchangeRate || 300)).toLocaleString()} CUP*`; 
+      const tUSD = getUSD(tCUP);
+      msg += `\n💰 *Total: ${tUSD.toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP*`; 
       saveData(); 
       const phone = (storeData.whatsappNumber || '').replace(/[^0-9]/g, ''); 
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
@@ -322,22 +308,24 @@
     let toastTimer; function showToast(msg, type) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + type; clearTimeout(toastTimer); setTimeout(() => t.classList.add('show'), 10); toastTimer = setTimeout(() => t.classList.remove('show'), 3500); }
     function updateAdminFab() { document.getElementById('adminFab').innerHTML = isLoggedIn ? '<i class="fas fa-unlock text-fuchsia"></i>' : '<i class="fas fa-lock"></i>'; }
 
-    function showAdminPage(pg) { currentAdminPage = pg; editingSectionId = null; editingProductId = null; document.querySelectorAll('.admin-tab').forEach(b => { const isActive = b.dataset.page === pg; b.classList.toggle('bg-fuchsia/20', isActive); b.classList.toggle('text-fuchsia', isActive); b.classList.toggle('text-gray-300', !isActive); }); const content = document.getElementById('adminContent'); if (pg === 'dashboard') renderDashboard(content); else if (pg === 'sections') renderSectionList(content); else if (pg === 'products') renderProductList(content); else if (pg === 'appearance') renderAppearance(content); else if (pg === 'settings') renderSettings(content); }
+    function showAdminPage(pg) { currentAdminPage = pg; editingSectionId = null; editingProductId = null; document.querySelectorAll('.admin-tab').forEach(b => { const isActive = b.dataset.page === pg; b.classList.toggle('bg-fuchsia/20', isActive); b.classList.toggle('text-fuchsia', isActive); b.classList.toggle('text-gray-300', !isActive); }); const c = document.getElementById('adminContent'); if (pg === 'dashboard') renderDashboard(c); else if (pg === 'sections') renderSectionList(c); else if (pg === 'products') renderProductList(c); else if (pg === 'appearance') renderAppearance(c); else if (pg === 'settings') renderSettings(c); }
 
     function renderDashboard(el) { let t = 0; storeData.sections.forEach(s => t += (s.products || []).length); el.innerHTML = `<div class="grid grid-cols-2 gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Secciones</p><p class="text-3xl font-bold text-fuchsia">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Productos</p><p class="text-3xl font-bold">${t}</p></div></div>`; }
 
     function renderSectionList(el) { let l = ''; storeData.sections.forEach(s => { l += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon || 'fas fa-gift'} text-fuchsia text-xl"></i><span class="font-bold text-lg">${s.name || 'Sin nombre'}</span></div><div class="flex gap-2 w-full sm:w-auto"><button type="button" onclick="window.renderSectionForm(${s.id})" class="flex-1 py-3 rounded-lg bg-gray-700 font-bold text-center">Editar</button><button type="button" onclick="window.deleteSection(${s.id})" class="flex-1 py-3 rounded-lg bg-red-900/30 text-red-400 font-bold text-center">Eliminar</button></div></div>`; }); el.innerHTML = `<div class="mb-6"><button type="button" onclick="window.renderSectionForm(null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-4">${l}</div>`; }
-    window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === id) : null; const content = document.getElementById('adminContent'); content.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-2xl font-bold mb-6">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="max-w-md space-y-4"><div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><button type="button" onclick="window.saveSection()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar</button></div>`; document.getElementById('sf_name').focus(); };
-    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === editingSectionId); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); };
-    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== id); await saveData(); window.showAdminPage('sections'); };
+    window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === Number(id)) : null; const content = document.getElementById('adminContent'); content.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-2xl font-bold mb-6">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="max-w-md space-y-4"><div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><button type="button" onclick="window.saveSection()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar</button></div>`; document.getElementById('sf_name').focus(); };
+    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === Number(editingSectionId)); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); };
+    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== Number(id)); await saveData(); window.showAdminPage('sections'); };
 
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = p.quantity != null ? p.quantity : 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.price)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
+    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = Number(p.quantity) || 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.priceCUP || 0)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
 
     window.renderProductForm = function(secId, prodId) {
       editingProductSectionId = secId; editingProductId = prodId;
-      const s = storeData.sections.find(x => x.id === secId);
-      const p = prodId ? s?.products.find(x => x.id === prodId) : null;
-      const qty = p ? (p.quantity != null ? p.quantity : 10) : 10;
+      const s = storeData.sections.find(x => x.id === Number(secId));
+      const p = prodId ? s?.products.find(x => x.id === Number(prodId)) : null;
+      const qty = p ? (Number(p.quantity) || 10) : 10;
+      const priceCUP = p ? (Number(p.priceCUP) || 0) : 0;
+      const rate = Number(storeData.exchangeRate) || 300;
       const content = document.getElementById('adminContent');
       content.innerHTML = `
         <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button>
@@ -345,7 +333,11 @@
         <div class="max-w-md space-y-4">
           <div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="pf_name" type="text" value="${p ? p.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm text-gray-400 mb-1">Precio (USD) *</label><input id="pf_price" type="text" value="${p ? p.price : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
+            <div>
+              <label class="block text-sm text-gray-400 mb-1">Precio (CUP) *</label>
+              <input id="pf_priceCUP" type="number" min="0" step="1" value="${priceCUP}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg" oninput="document.getElementById('pf_usd_preview').textContent = (Number(this.value)/${rate}).toFixed(2)">
+              <p class="text-xs text-gray-500 mt-1">≈ <span id="pf_usd_preview">${getUSD(priceCUP).toFixed(2)}</span> USD</p>
+            </div>
             <div><label class="block text-sm text-gray-400 mb-1">Cantidad / Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
           </div>
           <div>
@@ -373,14 +365,13 @@
 
     window.saveProduct = async function() {
       const name = document.getElementById('pf_name').value.trim();
-      let priceStr = document.getElementById('pf_price').value.replace(',', '.');
-      const price = parseFloat(priceStr);
-      const quantity = parseInt(document.getElementById('pf_quantity').value) || 0;
+      const priceCUP = Number(document.getElementById('pf_priceCUP').value) || 0;
+      const quantity = Number(document.getElementById('pf_quantity').value) || 0;
       const file = document.getElementById('pf_file').files[0];
       const btn = document.getElementById('saveProductBtn');
 
       if (!name) { showToast('Nombre obligatorio', 'error'); return; }
-      if (isNaN(price) || price < 0) { showToast('Precio inválido', 'error'); return; }
+      if (priceCUP <= 0) { showToast('El precio en CUP debe ser mayor a 0', 'error'); return; }
 
       let imageUrl = document.getElementById('pf_image_url').value;
 
@@ -396,15 +387,15 @@
         }
       }
 
-      const s = storeData.sections.find(x => x.id === editingProductSectionId);
+      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId));
       if (!s) { showToast('Error: Sección no encontrada', 'error'); return; }
       if (!s.products) s.products = [];
 
       if (editingProductId) {
-        const p = s.products.find(x => x.id === editingProductId);
-        if (p) { p.name = name; p.price = price; p.quantity = quantity; p.image = imageUrl; }
+        const p = s.products.find(x => x.id === Number(editingProductId));
+        if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; delete p.price; }
       } else {
-        s.products.push({ id: Date.now(), name, price, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` });
+        s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` });
       }
       
       await saveData();
@@ -415,9 +406,9 @@
 
     window.deleteProduct = async function(secId, prodId) {
       if (!confirm('¿Eliminar este producto?')) return;
-      const s = storeData.sections.find(x => x.id === secId);
+      const s = storeData.sections.find(x => x.id === Number(secId));
       if (s && s.products) {
-        s.products = s.products.filter(x => x.id !== prodId);
+        s.products = s.products.filter(x => x.id !== Number(prodId));
         await saveData();
         showToast('Producto eliminado', 'success');
         renderProductList(document.getElementById('adminContent'));
@@ -428,8 +419,8 @@
     function renderAppearance(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
     window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; await saveData(); showToast('Guardado', 'success'); };
 
-    function renderSettings(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div></div><button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar Configuración</button></div>`; }
-    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = parseInt(document.getElementById('st_exchange').value) || 300; await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); };
+    function renderSettings(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP (Tasa de cambio)</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div></div><button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
+    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); };
 
     window.setActiveTab = setActiveTab; window.addToCart = addToCart; window.removeFromCart = removeFromCart; window.updateQuantity = updateQuantity; window.showAdminPage = showAdminPage; window.openAdminPanel = openAdminPanel; window.closeAllModals = closeAllModals;
 
