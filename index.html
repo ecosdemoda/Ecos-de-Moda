@@ -92,7 +92,6 @@
 
   <div id="lightbox" onclick="if(event.target===this)window.closeLightbox()"><button class="absolute top-4 right-4 text-white text-3xl" onclick="window.closeLightbox()">&times;</button><img id="lightboxImg" src="" alt=""></div>
 
-  <!-- CARRITO ACTUALIZADO -->
   <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white p-6 shadow-2xl">
     <div class="flex justify-between items-center mb-6">
       <h3 class="font-display text-xl font-bold" style="color:var(--fg)">Mi Carrito</h3>
@@ -104,13 +103,8 @@
       <input type="text" id="checkName" placeholder="Tu nombre completo" class="admin-input border-sand bg-white text-charcoal">
       <input type="tel" id="checkPhone" placeholder="Número de teléfono" class="admin-input border-sand bg-white text-charcoal">
       <input type="text" id="checkAddress" placeholder="Dirección de entrega" class="admin-input border-sand bg-white text-charcoal">
-      <select id="checkMunicipality" class="admin-input border-sand bg-white text-charcoal">
-        <option value="">Selecciona el municipio</option>
-      </select>
-      <select id="checkPayment" class="admin-input border-sand bg-white text-charcoal">
-        <option value="Efectivo">Efectivo</option>
-        <option value="Transferencia">Transferencia</option>
-      </select>
+      <select id="checkMunicipality" class="admin-input border-sand bg-white text-charcoal"><option value="">Selecciona el municipio</option></select>
+      <select id="checkPayment" class="admin-input border-sand bg-white text-charcoal"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option></select>
       <textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="admin-input border-sand bg-white text-charcoal" style="resize:none;"></textarea>
       <div id="cartTotalSummary" class="text-right pt-2"></div>
       <button type="button" id="sendWhatsapp" class="w-full py-3 rounded-xl font-bold text-white text-base bg-green-600 active:scale-95 transition flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-xl"></i> Enviar Pedido</button>
@@ -137,7 +131,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
     const firebaseConfig = { 
       apiKey: "AIzaSyCHQvXHPyZbiqlhMsoDsSqkjrQ5wATj-Cw", 
@@ -153,31 +147,40 @@
     const db = getFirestore(app);
 
     let storeData = { sections: [] }, isLoggedIn = false, currentAdminPage = 'dashboard', activeSectionTab = -1, adminSelectedSection = 0, cart = [], editingSectionId = null, editingProductId = null, editingProductSectionId = null;
-    let initialLoadDone = false; 
 
     const DEFAULT_DATA = {
       storeName: 'Ecos de Moda', heroSubtitle: 'Tienda de Regalos', heroTitle: 'Ecos de Moda',
       backgroundColor: '#FFFAFC', headerColor: '#1A1A1A', accentColor: '#E91E8C',
       whatsappNumber: '53000000', exchangeRate: 300,
-      shippingZones: [
-        { name: 'Habana Vieja', cost: 300 },
-        { name: 'Centro Habana', cost: 300 },
-        { name: 'Playa', cost: 500 }
-      ],
+      shippingZones: [ { name: 'Habana Vieja', cost: 300 }, { name: 'Centro Habana', cost: 300 }, { name: 'Playa', cost: 500 } ],
       sections: [
         { id: 1, name: 'Cumpleaños', icon: 'fas fa-birthday-cake', products: [ { id: 1, name: 'Set de Velas', priceCUP: 3000, quantity: 5, image: 'https://picsum.photos/seed/vela01/400/400' } ] },
         { id: 2, name: 'Bodas', icon: 'fas fa-ring', products: [ { id: 2, name: 'Set de Copas', priceCUP: 7500, quantity: 2, image: 'https://picsum.photos/seed/copas05/400/400' } ] }
       ]
     };
 
-    function sanitizeData() { 
-      if (!storeData.sections) storeData.sections = []; 
-      if (!storeData.shippingZones) storeData.shippingZones = [];
-      storeData.exchangeRate = Number(storeData.exchangeRate) || 300; 
-      storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; p.quantity = Number(p.quantity) || 10; }); }); 
-    }
+    function sanitizeData() { if (!storeData.sections) storeData.sections = []; if (!storeData.shippingZones) storeData.shippingZones = []; storeData.exchangeRate = Number(storeData.exchangeRate) || 300; storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; p.quantity = Number(p.quantity) || 10; }); }); }
 
-    function initDatabase() { 
+    // CONEXIÓN SEGURA: Esperamos la primera respuesta real del servidor antes de hacer nada
+    async function initDatabase() {
+      try {
+        const d = await getDoc(doc(db, "store", "data"));
+        if (d.exists()) {
+          storeData = d.data();
+        } else {
+          // Solo si el documento NO EXISTE EN EL SERVIDOR, subimos los de ejemplo
+          storeData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+          await setDoc(doc(db, "store", "data"), storeData);
+        }
+      } catch (e) {
+        console.error("Error en la carga inicial (posiblemente sin conexión):", e);
+      }
+      
+      sanitizeData(); 
+      applyAppearance(); 
+      renderCatalog();
+
+      // Escuchador en tiempo real
       onSnapshot(doc(db, "store", "data"), (d) => { 
         if (d.exists()) { 
           storeData = d.data(); 
@@ -185,29 +188,25 @@
           applyAppearance(); 
           renderCatalog(); 
           if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); 
-        } else { 
-          if (!initialLoadDone) { 
-            storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
-            saveData(); 
-          } 
         } 
-        initialLoadDone = true;
       }, (error) => { 
-        console.error("Error Firebase:", error); 
+        console.error("Error en tiempo real:", error); 
         showToast('Error de conexión', 'error'); 
-      }); 
+      });
     }
     
     async function saveData() { 
       try { 
         const payload = JSON.parse(JSON.stringify(storeData));
-        if (JSON.stringify(payload).length > 900000) {
-          showToast('¡Cuidado! Estás cerca del límite de datos. Elimina productos o imágenes pesadas.', 'error');
+        const sizeBytes = new Blob([JSON.stringify(payload)]).size;
+        if (sizeBytes > 900000) {
+          showToast('¡Límite de datos alcanzado! Elimina productos o imágenes para poder guardar.', 'error');
+          throw new Error("Document too large");
         }
         await setDoc(doc(db, "store", "data"), payload); 
       } catch (e) { 
-        console.error("Error al guardar en Firebase:", e); 
-        showToast('Error al guardar en la nube. Verifica tu conexión o reduce el tamaño de las imágenes.', 'error'); 
+        console.error("Error al guardar:", e); 
+        if(e.message !== "Document too large") showToast('Error al guardar. Revisa tu conexión.', 'error'); 
         throw e; 
       } 
     }
@@ -220,6 +219,7 @@
     function getUSD(priceCUP) { return Number(priceCUP) / (Number(storeData.exchangeRate) || 300); }
     function formatPrice(priceCUP) { return `${getUSD(priceCUP).toFixed(2)} USD <span class="text-xs text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; }
 
+    // COMPRESIÓN EXTREMA: 300px y 40KB para garantizar que no se rompa la base de datos
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -229,13 +229,13 @@
           img.onerror = () => reject('Imagen corrupta');
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX = 400; let w = img.width, h = img.height;
+            const MAX = 300; let w = img.width, h = img.height;
             if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             let quality = 0.6;
             let dataUrl = canvas.toDataURL('image/jpeg', quality);
-            while (dataUrl.length > 150000 && quality > 0.1) { quality -= 0.1; dataUrl = canvas.toDataURL('image/jpeg', quality); }
+            while (dataUrl.length > 40000 && quality > 0.1) { quality -= 0.1; dataUrl = canvas.toDataURL('image/jpeg', quality); }
             resolve(dataUrl);
           };
           img.src = event.target.result;
@@ -315,14 +315,10 @@
       cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-3 items-center border-b border-sand pb-3"><img src="${i.image || ''}" class="w-14 h-14 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold text-sm">${i.name || ''}</h4><p class="text-xs" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">-</button><span class="font-bold w-4 text-center text-sm">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs">+</button></div></div>`; }); 
       cI.innerHTML = h; 
       
-      // Llenar municipios
       const sel = document.getElementById('checkMunicipality');
       sel.innerHTML = '<option value="">Selecciona el municipio</option>';
-      (storeData.shippingZones || []).forEach(z => {
-        sel.innerHTML += `<option value="${z.name}" data-cost="${z.cost}">${z.name} (+${Math.round(z.cost).toLocaleString()} CUP)</option>`;
-      });
+      (storeData.shippingZones || []).forEach(z => { sel.innerHTML += `<option value="${z.name}" data-cost="${z.cost}">${z.name} (+${Math.round(z.cost).toLocaleString()} CUP)</option>`; });
 
-      // Calcular y mostrar totales
       function updateTotalDisplay() {
         const selectedOption = sel.options[sel.selectedIndex];
         const shippingCost = Number(selectedOption.dataset.cost) || 0;
@@ -335,7 +331,6 @@
       }
       sel.onchange = updateTotalDisplay;
       updateTotalDisplay();
-
       cF.classList.remove('hidden'); 
     }
     
@@ -359,13 +354,11 @@
       cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; 
         for(let s of storeData.sections) { const p = s.products.find(x => x.id === i.id); if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 0) - i.quantity); } } 
       }); 
-      
       const totalCUP = tCUP + shippingCost;
-      
       msg += `\n🚚 *Mensajería a ${municipality}:* ${getUSD(shippingCost).toFixed(2)} USD | ${Math.round(shippingCost).toLocaleString()} CUP\n`;
       msg += `\n💰 *Total Final:* ${getUSD(totalCUP).toFixed(2)} USD | ${Math.round(totalCUP).toLocaleString()} CUP`; 
       
-      saveData().catch(e => console.error("Error actualizando inventario en pedido:", e));
+      saveData().catch(e => console.error("Error actualizando inventario:", e));
       window.open(`https://wa.me/${(storeData.whatsappNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank'); 
       cart = []; updateCartBadge(); closeAllModals(); 
     }
@@ -421,11 +414,10 @@
             <div><label class="block text-xs text-gray-400 mb-1">Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="admin-input"></div>
           </div>
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Imagen</label>
+            <label class="block text-xs text-gray-400 mb-1">Imagen (Máximo 1MB. Se comprime automáticamente)</label>
             <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-28 object-contain rounded-xl mb-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
             <input id="pf_file" type="file" accept="image/*" class="w-full text-white text-sm file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700">
             <input id="pf_image_url" type="hidden" value="${p ? p.image : ''}">
-            <p class="text-[9px] text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Usa imágenes ligeras (menos de 1MB). Se comprimirán automáticamente.</p>
           </div>
           <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar Producto</button>
         </div>`;
@@ -465,7 +457,6 @@
     function renderAppearance(el) { el.innerHTML = `<div class="space-y-4"><div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4"><h3 class="font-display text-sm font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-xs text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="admin-input"></div><div><label class="block text-xs text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="admin-input"></div><div class="grid grid-cols-3 gap-3"><div><label class="block text-xs text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-xs text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-10 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar</button></div>`; }
     window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; try { await saveData(); showToast('Aspecto guardado', 'success'); } catch(e) {} };
 
-    // CONFIGURACIÓN MEJORADA (MUNICIPIOS)
     function renderSettings(el) { 
       let zonesHtml = '';
       (storeData.shippingZones || []).forEach((z, i) => {
@@ -475,14 +466,12 @@
           <button type="button" onclick="window.removeShippingZone(${i})" class="text-red-400 text-xs p-1 hover:text-red-300"><i class="fas fa-trash"></i></button>
         </div>`;
       });
-
       el.innerHTML = `<div class="space-y-4">
         <div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4">
           <h3 class="font-display text-sm font-bold text-fuchsia">Ventas y WhatsApp</h3>
           <div><label class="block text-xs text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="admin-input"></div>
           <div><label class="block text-xs text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="admin-input"></div>
         </div>
-        
         <div class="bg-adminCard rounded-xl p-4 border border-gray-700 space-y-4">
           <h3 class="font-display text-sm font-bold text-fuchsia"><i class="fas fa-truck mr-2"></i>Municipios y Mensajería</h3>
           <div id="shippingZonesList" class="space-y-2 max-h-40 overflow-y-auto admin-scroll">${zonesHtml || '<p class="text-xs text-gray-500 text-center py-2">No hay municipios configurados</p>'}</div>
@@ -492,31 +481,19 @@
           </div>
           <button type="button" onclick="window.addShippingZone()" class="w-full py-2 rounded-lg bg-gray-700 font-bold text-xs active:scale-95 transition">Añadir Municipio</button>
         </div>
-
         <button type="button" onclick="window.saveSettings()" class="w-full py-3 rounded-xl font-bold text-white text-sm" style="background:var(--accent)">Guardar Configuración</button>
       </div>`; 
     }
-
     window.addShippingZone = async function() {
-      const name = document.getElementById('sz_name').value.trim();
-      const cost = Number(document.getElementById('sz_cost').value) || 0;
+      const name = document.getElementById('sz_name').value.trim(); const cost = Number(document.getElementById('sz_cost').value) || 0;
       if (!name) { showToast('Escribe el nombre del municipio', 'error'); return; }
-      storeData.shippingZones.push({ name, cost });
-      try { await saveData(); showToast('Municipio añadido', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
+      storeData.shippingZones.push({ name, cost }); try { await saveData(); showToast('Municipio añadido', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
     }
-
     window.removeShippingZone = async function(index) {
-      storeData.shippingZones.splice(index, 1);
-      try { await saveData(); showToast('Municipio eliminado', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
+      storeData.shippingZones.splice(index, 1); try { await saveData(); showToast('Municipio eliminado', 'success'); renderSettings(document.getElementById('adminContent')); } catch(e) {}
     }
+    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; try { await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); } catch(e) {} };
 
-    window.saveSettings = async function() { 
-      storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); 
-      storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; 
-      try { await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); } catch(e) {} 
-    };
-
-    // DECLARACIONES GLOBALES
     window.closeAllModals = closeAllModals;
     window.switchScreen = switchScreen;
     window.handleAdminClick = handleAdminClick;
