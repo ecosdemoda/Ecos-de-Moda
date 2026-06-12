@@ -58,6 +58,11 @@
     .badge-cart { position: absolute; top: -5px; right: -5px; background: var(--accent); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     .upload-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* LIGHTBOX CSS */
+    #lightbox { position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; cursor: zoom-out; opacity: 0; transition: opacity 0.3s; }
+    #lightbox.active { display: flex; opacity: 1; }
+    #lightbox img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); cursor: default; }
   </style>
 </head>
 <body>
@@ -94,6 +99,12 @@
   </main>
   <footer class="py-10 px-6 text-center" style="background:var(--fg)"><p id="footerName" class="font-display text-white text-xl font-bold mb-2">Ecos de Moda</p></footer>
 
+  <!-- LIGHTBOX HTML -->
+  <div id="lightbox" onclick="if(event.target===this)window.closeLightbox()">
+    <button class="absolute top-4 right-4 text-white text-4xl hover:text-fuchsia transition z-10" onclick="window.closeLightbox()">&times;</button>
+    <img id="lightboxImg" src="" alt="Imagen grande">
+  </div>
+
   <div id="cartModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-6 mx-4 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="font-display text-2xl font-bold" style="color:var(--fg)">Mi Carrito</h3><button type="button" onclick="window.closeAllModals()" class="text-drift hover:text-charcoal text-xl"><i class="fas fa-times"></i></button></div><div id="cartItems" class="space-y-4 mb-6"></div><div id="checkoutForm" class="space-y-4 border-t border-sand pt-6 hidden"><h4 class="font-bold text-lg">Datos de Envío</h4><input type="text" id="checkName" placeholder="Tu nombre completo" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><input type="text" id="checkAddress" placeholder="Dirección de entrega" class="w-full px-4 py-3 rounded-xl border border-sand outline-none focus:border-fuchsia"><select id="checkPayment" class="w-full px-4 py-3 rounded-xl border border-sand outline-none bg-white focus:border-fuchsia"><option value="Efectivo">Pago en Efectivo</option><option value="Transferencia">Pago por Transferencia</option></select><textarea id="checkNotes" rows="2" placeholder="Notas adicionales (opcional)" class="w-full px-4 py-3 rounded-xl border border-sand outline-none resize-none focus:border-fuchsia"></textarea><p class="text-xs text-drift italic"><i class="fas fa-truck mr-1"></i> La mensajería se cobra aparte o puede recogerlo en nuestra tienda.</p><button type="button" id="sendWhatsapp" class="w-full py-4 rounded-xl font-bold text-white text-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-2xl"></i> Enviar Pedido por WhatsApp</button></div></div></div>
 
   <div id="loginModal" class="modal-overlay"><div class="modal-box bg-white rounded-2xl p-8 mx-4 shadow-2xl"><h3 class="font-display text-2xl font-bold mb-4 text-center" style="color:var(--fg)">Acceso Admin</h3><div class="space-y-4"><input id="loginUser" type="email" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Email"><input id="loginPass" type="password" class="w-full px-4 py-4 rounded-xl border border-sand outline-none text-lg focus:border-fuchsia" placeholder="Contraseña"><p id="loginError" class="text-red-500 text-sm hidden">Credenciales incorrectas</p><button type="button" id="loginBtn" class="w-full py-4 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Iniciar Sesión</button><button type="button" onclick="window.closeAllModals()" class="w-full py-4 rounded-xl font-bold text-drift border border-sand">Cancelar</button></div></div></div>
@@ -126,68 +137,28 @@
     function setupRevealObserver() { if (revealObserver) revealObserver.disconnect(); revealObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }); }, { threshold: 0.1 }); document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el)); }
     function refreshReveals() { requestAnimationFrame(() => setupRevealObserver()); }
 
-    // LIMPIEZA DE DATOS: Fuerza a números y arregla productos viejos
-    function sanitizeData() {
-      if (!storeData.sections) storeData.sections = [];
-      storeData.exchangeRate = Number(storeData.exchangeRate) || 300;
-      storeData.sections.forEach(s => {
-        if (!s.products) s.products = [];
-        s.id = Number(s.id);
-        s.products.forEach(p => {
-          p.id = Number(p.id);
-          // Migración: si existe el viejo "price" en USD, pasarlo a CUP
-          if (p.price !== undefined && p.priceCUP === undefined) {
-            p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300));
-            delete p.price;
-          }
-          p.priceCUP = Number(p.priceCUP) || 0;
-        });
-      });
-    }
+    function sanitizeData() { if (!storeData.sections) storeData.sections = []; storeData.exchangeRate = Number(storeData.exchangeRate) || 300; storeData.sections.forEach(s => { if (!s.products) s.products = []; s.id = Number(s.id); s.products.forEach(p => { p.id = Number(p.id); if (p.price !== undefined && p.priceCUP === undefined) { p.priceCUP = Math.round(Number(p.price) * (storeData.exchangeRate || 300)); delete p.price; } p.priceCUP = Number(p.priceCUP) || 0; }); }); }
 
     function initDatabase() { 
       onSnapshot(doc(db, "store", "data"), (d) => { 
-        if (d.exists()) { 
-          storeData = d.data(); 
-          sanitizeData(); // Siempre limpiar al leer
-        } else { 
-          storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
-          saveData(); 
-        } 
-        applyAppearance(); 
-        renderCatalog(); 
+        if (d.exists()) { storeData = d.data(); sanitizeData(); } 
+        else { storeData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); } 
+        applyAppearance(); renderCatalog(); 
         if (document.getElementById('adminModal').classList.contains('visible')) window.showAdminPage(currentAdminPage); 
-      }, (error) => {
-        console.error("Error Firebase:", error);
-        if (error.code === 'permission-denied') showToast('Error: Permisos de Firebase', 'error');
-        else showToast('Error de red o VPN', 'error');
-      }); 
+      }, (error) => { console.error("Error Firebase:", error); if (error.code === 'permission-denied') showToast('Error: Permisos', 'error'); else showToast('Error de red', 'error'); }); 
     }
     
-    async function saveData() { 
-      try { 
-        const cleanData = JSON.parse(JSON.stringify(storeData));
-        await setDoc(doc(db, "store", "data"), cleanData); 
-      } catch (e) { 
-        console.error("Error al guardar:", e);
-        if (e.message.includes("maximum size")) showToast('Base de datos llena', 'error');
-        else showToast('Error al guardar', 'error'); 
-      } 
-    }
+    async function saveData() { try { await setDoc(doc(db, "store", "data"), JSON.parse(JSON.stringify(storeData))); } catch (e) { console.error(e); if (e.message.includes("maximum size")) showToast('Doc. muy grande. Sube imágenes más ligeras.', 'error'); else showToast('Error al guardar', 'error'); } }
 
     function initAuth() { onAuthStateChanged(auth, (u) => { isLoggedIn = !!u; updateAdminFab(); }); }
     async function handleLogin() { try { await signInWithEmailAndPassword(auth, document.getElementById('loginUser').value, document.getElementById('loginPass').value); closeAllModals(); openAdminPanel('dashboard'); } catch (e) { document.getElementById('loginError').classList.remove('hidden'); } }
     async function handleLogout() { await signOut(auth); closeAllModals(); }
 
     function applyAppearance() { document.documentElement.style.setProperty('--bg', storeData.backgroundColor || '#FFFAFC'); document.documentElement.style.setProperty('--fg', storeData.headerColor || '#1A1A1A'); document.documentElement.style.setProperty('--accent', storeData.accentColor || '#E91E8C'); document.body.style.background = storeData.backgroundColor; document.body.style.color = storeData.headerColor; document.getElementById('navTitle').textContent = storeData.storeName || 'Ecos de Moda'; document.getElementById('heroTitle').textContent = storeData.heroTitle || 'Ecos de Moda'; document.getElementById('heroSubtitle').textContent = storeData.heroSubtitle || 'Tienda de Regalos'; document.getElementById('footerName').textContent = storeData.storeName || 'Ecos de Moda'; }
-    
-    // PRECIO: CUP → USD automático
-    function getUSD(priceCUP) { const rate = Number(storeData.exchangeRate) || 300; return Number(priceCUP) / rate; }
-    function formatPrice(priceCUP) { 
-      const usd = getUSD(priceCUP); 
-      return `${usd.toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; 
-    }
+    function getUSD(priceCUP) { return Number(priceCUP) / (Number(storeData.exchangeRate) || 300); }
+    function formatPrice(priceCUP) { return `${getUSD(priceCUP).toFixed(2)} USD <span class="text-sm text-drift font-normal">| ${Math.round(Number(priceCUP)).toLocaleString()} CUP</span>`; }
 
+    // CALIDAD MEJORADA: 500x500 y ajuste dinámico de calidad para no romper Firestore
     function compressAndProcessImage(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -197,11 +168,19 @@
           img.onerror = () => reject('La imagen está corrupta');
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX = 250; let w = img.width, h = img.height;
+            const MAX = 500; let w = img.width, h = img.height;
             if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.4));
+            let quality = 0.7;
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+            // Si la imagen supera los ~750KB en Base64, bajamos calidad para no romper el límite de 1MB de Firestore
+            while (dataUrl.length > 750000 && quality > 0.3) {
+              quality -= 0.1;
+              dataUrl = canvas.toDataURL('image/jpeg', quality);
+            }
+            if(dataUrl.length > 900000) showToast('Imagen grande, límite cerca', 'info');
+            resolve(dataUrl);
           };
           img.src = event.target.result;
         };
@@ -209,19 +188,24 @@
       });
     }
 
+    // LIGHTBOX
+    window.openLightbox = function(src) {
+      const lb = document.getElementById('lightbox');
+      document.getElementById('lightboxImg').src = src;
+      lb.classList.add('active');
+    };
+    window.closeLightbox = function() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('active');
+    };
+
     function renderCatalog() { 
       try {
-        // Resetear tab si se borró la sección activa
         if (activeSectionTab >= storeData.sections.length) activeSectionTab = -1;
-
         const tC = document.getElementById('sectionTabs'), gC = document.getElementById('productGrid'), secs = storeData.sections || []; 
         let tH = `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === -1 ? 'active' : ''}" onclick="window.setActiveTab(-1)">Todos</button>`; 
-        secs.forEach((s, i) => { 
-          if(!s) return;
-          tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon || 'fas fa-gift'} mr-1"></i>${s.name || 'Sin nombre'}</button>`; 
-        }); 
+        secs.forEach((s, i) => { if(!s) return; tH += `<button type="button" class="tab-btn px-4 py-2 text-sm font-semibold rounded-t-lg ${activeSectionTab === i ? 'active' : ''}" onclick="window.setActiveTab(${i})"><i class="${s.icon || 'fas fa-gift'} mr-1"></i>${s.name || 'Sin nombre'}</button>`; }); 
         tC.innerHTML = tH; 
-        
         let pH = ''; 
         const showS = activeSectionTab === -1 ? secs : (secs[activeSectionTab] ? [secs[activeSectionTab]] : secs); 
         showS.forEach(s => { 
@@ -229,13 +213,11 @@
           if (activeSectionTab === -1) pH += `<div class="col-span-full mt-6 mb-2"><h3 class="font-display text-2xl font-bold"><i class="${s.icon || ''} mr-2" style="color:var(--accent)"></i>${s.name || ''}</h3></div>`; 
           s.products.forEach(p => { 
             if(!p) return;
-            const qty = Number(p.quantity) || 10; 
-            const isAvailable = qty > 0;
-            const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
+            const qty = Number(p.quantity) || 10; const isAvailable = qty > 0; const imgSrc = p.image || 'https://picsum.photos/seed/default/400/400';
             pH += `
               <article class="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-sand/50 flex flex-col">
-                <div class="overflow-hidden h-56 bg-sand/20">
-                  <img src="${imgSrc}" alt="${p.name || 'Producto'}" class="w-full h-full object-cover" loading="lazy">
+                <div class="overflow-hidden h-56 bg-sand/20 cursor-zoom-in" onclick="window.openLightbox(this.querySelector('img').src)">
+                  <img src="${imgSrc}" alt="${p.name || 'Producto'}" class="w-full h-full object-cover transition-transform hover:scale-105" loading="lazy">
                 </div>
                 <div class="p-5 flex flex-col flex-grow">
                   <h4 class="font-display text-lg font-bold mb-1" style="color:var(--fg)">${p.name || 'Sin nombre'}</h4>
@@ -261,44 +243,31 @@
     function setActiveTab(i) { activeSectionTab = i; renderCatalog(); }
 
     function addToCart(sId, pId) { 
-      const s = storeData.sections.find(x => x.id === Number(sId)); 
-      if(!s) return;
-      const p = s.products.find(x => x.id === Number(pId)); 
-      if(!p) return;
-      const qty = Number(p.quantity) || 10;
-      const currentInCart = cart.find(x => x.id === p.id)?.quantity || 0;
+      const s = storeData.sections.find(x => x.id === Number(sId)); if(!s) return;
+      const p = s.products.find(x => x.id === Number(pId)); if(!p) return;
+      const qty = Number(p.quantity) || 10; const currentInCart = cart.find(x => x.id === p.id)?.quantity || 0;
       if (currentInCart >= qty) { showToast('No hay más unidades', 'error'); return; }
       const e = cart.find(x => x.id === p.id); 
-      if (e) e.quantity++; 
-      else cart.push({ id: p.id, name: p.name, priceCUP: Number(p.priceCUP) || 0, image: p.image, quantity: 1 }); 
-      updateCartBadge(); 
-      showToast('Añadido al carrito', 'success'); 
+      if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, priceCUP: Number(p.priceCUP) || 0, image: p.image, quantity: 1 }); 
+      updateCartBadge(); showToast('Añadido', 'success'); 
     }
     function removeFromCart(pId) { cart = cart.filter(x => x.id !== pId); renderCartModal(); updateCartBadge(); }
     function updateQuantity(pId, d) { const i = cart.find(x => x.id === pId); if (!i) return; i.quantity += d; if (i.quantity <= 0) { removeFromCart(pId); return; } renderCartModal(); updateCartBadge(); }
     function updateCartBadge() { const t = cart.reduce((s, i) => s + i.quantity, 0), b = document.getElementById('cartBadge'); if (t > 0) { b.textContent = t; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
-    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); const tUSD = getUSD(tCUP); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${tUSD.toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
+    function renderCartModal() { const cI = document.getElementById('cartItems'), cF = document.getElementById('checkoutForm'); if (cart.length === 0) { cI.innerHTML = '<p class="text-center text-drift py-8">Tu carrito está vacío</p>'; cF.classList.add('hidden'); return; } let h = '', tCUP = 0; cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; h += `<div class="flex gap-4 items-center border-b border-sand pb-4"><img src="${i.image || ''}" class="w-16 h-16 rounded-lg object-cover"><div class="flex-grow"><h4 class="font-bold">${i.name || ''}</h4><p class="text-sm" style="color:var(--accent)">${formatPrice(i.priceCUP || 0)}</p></div><div class="flex items-center gap-2"><button type="button" onclick="window.updateQuantity(${i.id}, -1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">-</button><span class="font-bold w-6 text-center">${i.quantity}</span><button type="button" onclick="window.updateQuantity(${i.id}, 1)" class="w-8 h-8 rounded-full bg-sand flex items-center justify-center">+</button></div></div>`; }); h += `<div class="pt-4 text-right font-bold text-xl">Total: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP</div>`; cI.innerHTML = h; cF.classList.remove('hidden'); }
     
     function sendWhatsappOrder() { 
       const name = document.getElementById('checkName').value.trim(), address = document.getElementById('checkAddress').value.trim(), payment = document.getElementById('checkPayment').value, notes = document.getElementById('checkNotes').value.trim(); 
       if (!name || !address) { showToast('Completa nombre y dirección', 'error'); return; } 
       let msg = `🛒 *Pedido de ${storeData.storeName}*\n\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n💳 *Pago:* ${payment}\n`; 
-      if (notes) msg += `📝 *Notas:* ${notes}\n`; 
-      msg += `\n📦 *Productos:*\n`; 
+      if (notes) msg += `📝 *Notas:* ${notes}\n`; msg += `\n📦 *Productos:*\n`; 
       let tCUP = 0; 
-      cart.forEach(i => { 
-        const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; 
-        msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; 
-        for(let s of storeData.sections) { 
-          const p = s.products.find(x => x.id === i.id); 
-          if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 10) - i.quantity); } 
-        } 
+      cart.forEach(i => { const subCUP = (Number(i.priceCUP) || 0) * i.quantity; tCUP += subCUP; msg += `  • ${i.name} x${i.quantity} — ${getUSD(subCUP).toFixed(2)} USD\n`; 
+        for(let s of storeData.sections) { const p = s.products.find(x => x.id === i.id); if(p) { p.quantity = Math.max(0, (Number(p.quantity) || 10) - i.quantity); } } 
       }); 
-      const tUSD = getUSD(tCUP);
-      msg += `\n💰 *Total: ${tUSD.toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP*`; 
+      msg += `\n💰 *Total: ${getUSD(tCUP).toFixed(2)} USD | ${Math.round(tCUP).toLocaleString()} CUP*`; 
       saveData(); 
-      const phone = (storeData.whatsappNumber || '').replace(/[^0-9]/g, ''); 
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+      window.open(`https://wa.me/${(storeData.whatsappNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank'); 
       cart = []; updateCartBadge(); closeAllModals(); 
     }
 
@@ -313,21 +282,20 @@
     function renderDashboard(el) { let t = 0; storeData.sections.forEach(s => t += (s.products || []).length); el.innerHTML = `<div class="grid grid-cols-2 gap-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Secciones</p><p class="text-3xl font-bold text-fuchsia">${storeData.sections.length}</p></div><div class="bg-adminCard rounded-2xl p-6 border border-gray-700"><p class="text-gray-400">Productos</p><p class="text-3xl font-bold">${t}</p></div></div>`; }
 
     function renderSectionList(el) { let l = ''; storeData.sections.forEach(s => { l += `<div class="bg-adminCard rounded-xl p-4 border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"><div class="flex items-center gap-4"><i class="${s.icon || 'fas fa-gift'} text-fuchsia text-xl"></i><span class="font-bold text-lg">${s.name || 'Sin nombre'}</span></div><div class="flex gap-2 w-full sm:w-auto"><button type="button" onclick="window.renderSectionForm(${s.id})" class="flex-1 py-3 rounded-lg bg-gray-700 font-bold text-center">Editar</button><button type="button" onclick="window.deleteSection(${s.id})" class="flex-1 py-3 rounded-lg bg-red-900/30 text-red-400 font-bold text-center">Eliminar</button></div></div>`; }); el.innerHTML = `<div class="mb-6"><button type="button" onclick="window.renderSectionForm(null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nueva Sección</button></div><div class="space-y-4">${l}</div>`; }
-    window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === Number(id)) : null; const content = document.getElementById('adminContent'); content.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-2xl font-bold mb-6">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="max-w-md space-y-4"><div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><button type="button" onclick="window.saveSection()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar</button></div>`; document.getElementById('sf_name').focus(); };
-    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === Number(editingSectionId)); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Sección guardada', 'success'); window.showAdminPage('sections'); };
-    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección y sus productos?')) return; storeData.sections = storeData.sections.filter(x => x.id !== Number(id)); await saveData(); window.showAdminPage('sections'); };
+    window.renderSectionForm = function(id) { editingSectionId = id; const s = id ? storeData.sections.find(x => x.id === Number(id)) : null; const c = document.getElementById('adminContent'); c.innerHTML = `<button type="button" onclick="window.showAdminPage('sections')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button><h3 class="font-display text-2xl font-bold mb-6">${s ? 'Editar' : 'Nueva'} Sección</h3><div class="max-w-md space-y-4"><div><label class="block text-sm text-gray-400 mb-1">Nombre *</label><input id="sf_name" type="text" value="${s ? s.name : ''}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Icono</label><input id="sf_icon" type="text" value="${s ? s.icon : 'fas fa-gift'}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><button type="button" onclick="window.saveSection()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar</button></div>`; document.getElementById('sf_name').focus(); };
+    window.saveSection = async function() { const name = document.getElementById('sf_name').value.trim(), icon = document.getElementById('sf_icon').value.trim() || 'fas fa-gift'; if (!name) { showToast('Nombre obligatorio', 'error'); return; } if (editingSectionId) { const s = storeData.sections.find(x => x.id === Number(editingSectionId)); if (s) { s.name = name; s.icon = icon; } } else { storeData.sections.push({ id: Date.now(), name, icon, products: [] }); } await saveData(); showToast('Guardada', 'success'); window.showAdminPage('sections'); };
+    window.deleteSection = async function(id) { if (!confirm('¿Eliminar sección?')) return; storeData.sections = storeData.sections.filter(x => x.id !== Number(id)); await saveData(); window.showAdminPage('sections'); };
 
-    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; const qty = Number(p.quantity) || 10; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || 'Producto'}</h4><p class="text-fuchsia text-sm">${formatPrice(p.priceCUP || 0)}</p><p class="text-xs mt-1 ${qty > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${qty}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
+    function renderProductList(el) { if (storeData.sections.length === 0) { el.innerHTML = `<div class="text-center py-12 text-gray-400"><p class="text-xl">Crea una sección primero.</p><button type="button" onclick="window.showAdminPage('sections')" class="mt-4 px-6 py-2 rounded-lg bg-gray-700 font-bold">Ir a Secciones</button></div>`; return; } if (adminSelectedSection >= storeData.sections.length) adminSelectedSection = 0; let sH = ''; storeData.sections.forEach((s, i) => { sH += `<option value="${i}" ${adminSelectedSection === i ? 'selected' : ''}>${s.name || 'Sin nombre'}</option>`; }); const sec = storeData.sections[adminSelectedSection]; let pH = ''; if(sec && sec.products) { sec.products.forEach(p => { if(!p) return; pH += `<div class="bg-adminCard rounded-xl border border-gray-700 overflow-hidden"><img src="${p.image || 'https://picsum.photos/seed/default/400/400'}" class="w-full h-32 object-cover bg-sand/20"><div class="p-4"><h4 class="font-bold truncate">${p.name || ''}</h4><p class="text-fuchsia text-sm">${formatPrice(p.priceCUP || 0)}</p><p class="text-xs mt-1 ${(Number(p.quantity)||10) > 0 ? 'text-green-400' : 'text-red-400'}"><i class="fas fa-boxes-stacked mr-1"></i>Stock: ${Number(p.quantity)||10}</p><div class="flex gap-2 mt-3"><button type="button" onclick="window.renderProductForm(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-gray-700 font-bold">Editar</button><button type="button" onclick="window.deleteProduct(${sec.id}, ${p.id})" class="flex-1 py-2 rounded-lg bg-red-900/30 text-red-400 font-bold">Eliminar</button></div></div></div>`; }); } el.innerHTML = `<div class="flex flex-col gap-4 mb-6"><select id="adminSectionSelect" class="bg-adminCard border border-gray-700 rounded-xl px-4 py-3 text-white outline-none text-lg w-full">${sH}</select><button type="button" onclick="window.renderProductForm(${sec.id}, null)" class="w-full px-5 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)"><i class="fas fa-plus mr-2"></i>Nuevo Producto</button></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">${pH}</div>`; setTimeout(() => { const sel = document.getElementById('adminSectionSelect'); if(sel) sel.onchange = function() { adminSelectedSection = parseInt(this.value); renderProductList(document.getElementById('adminContent')); }; }, 50); }
 
     window.renderProductForm = function(secId, prodId) {
       editingProductSectionId = secId; editingProductId = prodId;
       const s = storeData.sections.find(x => x.id === Number(secId));
       const p = prodId ? s?.products.find(x => x.id === Number(prodId)) : null;
-      const qty = p ? (Number(p.quantity) || 10) : 10;
-      const priceCUP = p ? (Number(p.priceCUP) || 0) : 0;
+      const qty = p ? (Number(p.quantity) || 10) : 10; const priceCUP = p ? (Number(p.priceCUP) || 0) : 0;
       const rate = Number(storeData.exchangeRate) || 300;
-      const content = document.getElementById('adminContent');
-      content.innerHTML = `
+      const c = document.getElementById('adminContent');
+      c.innerHTML = `
         <button type="button" onclick="window.showAdminPage('products')" class="text-drift hover:text-white mb-6 inline-flex items-center gap-2 transition"><i class="fas fa-arrow-left"></i> Volver</button>
         <h3 class="font-display text-2xl font-bold mb-6">${p ? 'Editar' : 'Nuevo'} Producto <span class="text-sm text-gray-400 font-normal">en ${s.name || ''}</span></h3>
         <div class="max-w-md space-y-4">
@@ -338,89 +306,40 @@
               <input id="pf_priceCUP" type="number" min="0" step="1" value="${priceCUP}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg" oninput="document.getElementById('pf_usd_preview').textContent = (Number(this.value)/${rate}).toFixed(2)">
               <p class="text-xs text-gray-500 mt-1">≈ <span id="pf_usd_preview">${getUSD(priceCUP).toFixed(2)}</span> USD</p>
             </div>
-            <div><label class="block text-sm text-gray-400 mb-1">Cantidad / Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
+            <div><label class="block text-sm text-gray-400 mb-1">Stock *</label><input id="pf_quantity" type="number" min="0" value="${qty}" class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div>
           </div>
           <div>
             <label class="block text-sm text-gray-400 mb-1">Imagen</label>
             <img id="pf_img_preview" src="${p ? p.image : ''}" class="w-full h-40 object-contain rounded-xl mb-2 bg-sand/20 ${p && p.image ? '' : 'hidden'}">
             <input id="pf_file" type="file" accept="image/*" class="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
             <input id="pf_image_url" type="hidden" value="${p ? p.image : ''}">
+            <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle mr-1"></i>Se comprime a máx 500px (calidad alta).</p>
           </div>
           <button type="button" id="saveProductBtn" onclick="window.saveProduct()" class="w-full px-6 py-3 rounded-xl font-bold text-white text-lg" style="background:var(--accent)">Guardar Producto</button>
         </div>`;
-      setTimeout(() => {
-        const fileInput = document.getElementById('pf_file');
-        if(fileInput) {
-          fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (ev) => { document.getElementById('pf_img_preview').src = ev.target.result; document.getElementById('pf_img_preview').classList.remove('hidden'); };
-              reader.readAsDataURL(file);
-            }
-          };
-        }
-      }, 50);
+      setTimeout(() => { const f = document.getElementById('pf_file'); if(f) f.onchange = (e) => { const file = e.target.files[0]; if (file) { const r = new FileReader(); r.onload = (ev) => { document.getElementById('pf_img_preview').src = ev.target.result; document.getElementById('pf_img_preview').classList.remove('hidden'); }; r.readAsDataURL(file); } }; }, 50);
     };
 
     window.saveProduct = async function() {
-      const name = document.getElementById('pf_name').value.trim();
-      const priceCUP = Number(document.getElementById('pf_priceCUP').value) || 0;
-      const quantity = Number(document.getElementById('pf_quantity').value) || 0;
-      const file = document.getElementById('pf_file').files[0];
-      const btn = document.getElementById('saveProductBtn');
-
+      const name = document.getElementById('pf_name').value.trim(); const priceCUP = Number(document.getElementById('pf_priceCUP').value) || 0; const quantity = Number(document.getElementById('pf_quantity').value) || 0;
+      const file = document.getElementById('pf_file').files[0]; const btn = document.getElementById('saveProductBtn');
       if (!name) { showToast('Nombre obligatorio', 'error'); return; }
-      if (priceCUP <= 0) { showToast('El precio en CUP debe ser mayor a 0', 'error'); return; }
-
+      if (priceCUP <= 0) { showToast('Precio CUP > 0', 'error'); return; }
       let imageUrl = document.getElementById('pf_image_url').value;
-
-      if (file) {
-        btn.disabled = true; 
-        btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando...';
-        try {
-          imageUrl = await compressAndProcessImage(file);
-        } catch (error) {
-          showToast('Error al procesar la imagen', 'error');
-          btn.disabled = false; btn.innerHTML = 'Guardar Producto';
-          return;
-        }
-      }
-
-      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId));
-      if (!s) { showToast('Error: Sección no encontrada', 'error'); return; }
-      if (!s.products) s.products = [];
-
-      if (editingProductId) {
-        const p = s.products.find(x => x.id === Number(editingProductId));
-        if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; delete p.price; }
-      } else {
-        s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` });
-      }
-      
-      await saveData();
-      showToast('Producto guardado', 'success');
-      window.showAdminPage('products');
-      renderCatalog(); 
+      if (file) { btn.disabled = true; btn.innerHTML = '<span class="upload-spinner mr-2"></span> Procesando...'; try { imageUrl = await compressAndProcessImage(file); } catch (e) { showToast('Error imagen', 'error'); btn.disabled = false; btn.innerHTML = 'Guardar'; return; } }
+      const s = storeData.sections.find(x => x.id === Number(editingProductSectionId)); if (!s) return; if (!s.products) s.products = [];
+      if (editingProductId) { const p = s.products.find(x => x.id === Number(editingProductId)); if (p) { p.name = name; p.priceCUP = priceCUP; p.quantity = quantity; p.image = imageUrl; delete p.price; } } 
+      else { s.products.push({ id: Date.now(), name, priceCUP, quantity, image: imageUrl || `https://picsum.photos/seed/${Date.now()}/400/400` }); }
+      await saveData(); showToast('Guardado', 'success'); window.showAdminPage('products'); renderCatalog(); 
     };
 
-    window.deleteProduct = async function(secId, prodId) {
-      if (!confirm('¿Eliminar este producto?')) return;
-      const s = storeData.sections.find(x => x.id === Number(secId));
-      if (s && s.products) {
-        s.products = s.products.filter(x => x.id !== Number(prodId));
-        await saveData();
-        showToast('Producto eliminado', 'success');
-        renderProductList(document.getElementById('adminContent'));
-        renderCatalog(); 
-      }
-    };
+    window.deleteProduct = async function(secId, prodId) { if (!confirm('¿Eliminar?')) return; const s = storeData.sections.find(x => x.id === Number(secId)); if (s && s.products) { s.products = s.products.filter(x => x.id !== Number(prodId)); await saveData(); showToast('Eliminado', 'success'); renderProductList(document.getElementById('adminContent')); renderCatalog(); } };
 
     function renderAppearance(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Textos y Colores</h3><div><label class="block text-sm text-gray-400 mb-1">Nombre</label><input id="ap_storeName" type="text" value="${storeData.storeName || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Título Hero</label><input id="ap_heroTitle" type="text" value="${storeData.heroTitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">Subtítulo Hero</label><input id="ap_heroSubtitle" type="text" value="${storeData.heroSubtitle || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm text-gray-400 mb-1">Fondo</label><input id="ap_bgColor" type="color" value="${storeData.backgroundColor || '#FFFAFC'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Texto</label><input id="ap_headerColor" type="color" value="${storeData.headerColor || '#1A1A1A'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div><div><label class="block text-sm text-gray-400 mb-1">Acento</label><input id="ap_accentColor" type="color" value="${storeData.accentColor || '#E91E8C'}" class="w-full h-14 rounded cursor-pointer bg-transparent border-0"></div></div></div><button type="button" onclick="window.saveAppearance()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
     window.saveAppearance = async function() { storeData.storeName = document.getElementById('ap_storeName').value.trim(); storeData.heroTitle = document.getElementById('ap_heroTitle').value.trim(); storeData.heroSubtitle = document.getElementById('ap_heroSubtitle').value.trim(); storeData.backgroundColor = document.getElementById('ap_bgColor').value; storeData.headerColor = document.getElementById('ap_headerColor').value; storeData.accentColor = document.getElementById('ap_accentColor').value; await saveData(); showToast('Guardado', 'success'); };
 
-    function renderSettings(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP (Tasa de cambio)</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div></div><button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
-    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; await saveData(); showToast('Configuración guardada', 'success'); renderCatalog(); };
+    function renderSettings(el) { el.innerHTML = `<div class="max-w-2xl space-y-6"><div class="bg-adminCard rounded-2xl p-6 border border-gray-700 space-y-5"><h3 class="font-display text-lg font-bold text-fuchsia">Ventas y WhatsApp</h3><div><label class="block text-sm text-gray-400 mb-1">Número de WhatsApp</label><input id="st_whatsapp" type="text" value="${storeData.whatsappNumber || ''}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div><div><label class="block text-sm text-gray-400 mb-1">1 USD = ? CUP</label><input id="st_exchange" type="number" value="${storeData.exchangeRate || 300}" class="w-full px-4 py-4 rounded-xl bg-gray-800 border border-gray-600 text-white outline-none text-lg"></div></div><button type="button" onclick="window.saveSettings()" class="w-full px-8 py-4 rounded-xl font-bold text-white text-xl" style="background:var(--accent)">Guardar</button></div>`; }
+    window.saveSettings = async function() { storeData.whatsappNumber = document.getElementById('st_whatsapp').value.trim(); storeData.exchangeRate = Number(document.getElementById('st_exchange').value) || 300; await saveData(); showToast('Guardado', 'success'); renderCatalog(); };
 
     window.setActiveTab = setActiveTab; window.addToCart = addToCart; window.removeFromCart = removeFromCart; window.updateQuantity = updateQuantity; window.showAdminPage = showAdminPage; window.openAdminPanel = openAdminPanel; window.closeAllModals = closeAllModals;
 
@@ -431,8 +350,10 @@
       document.getElementById('loginBtn').addEventListener('click', handleLogin);
       document.getElementById('adminLogout').addEventListener('click', handleLogout);
       document.getElementById('sendWhatsapp').addEventListener('click', sendWhatsappOrder);
-      document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', function(e) { if (e.target === overlay) closeAllModals(); }); });
+      document.querySelectorAll('.modal-overlay').forEach(o => { o.addEventListener('click', function(e) { if (e.target === o) closeAllModals(); }); });
       window.addEventListener('scroll', () => { document.getElementById('mainNav').classList.toggle('nav-scrolled', window.scrollY > 80); });
+      // Cerrar lightbox con tecla Escape
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.closeLightbox(); });
     });
   </script>
 </body>
