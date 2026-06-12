@@ -3,31 +3,469 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ecos de Moda</title>
+  <title>Ecos de Moda — Tienda de Regalos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            blush: '#FFFAFC', charcoal: '#1A1A1A', fuchsia: '#E91E8C', sand: '#F3E5F5', drift: '#6B7280', admin: '#111827', adminCard: '#1F2937'
+            blush: '#FFFAFC', charcoal: '#1A1A1A', bark: '#1A1A1A',
+            fuchsia: '#E91E8C', deepFuchsia: '#C2185B', sand: '#F3E5F5',
+            drift: '#6B7280', admin: '#111827', adminCard: '#1F2937'
           },
           fontFamily: { display: ['Playfair Display', 'serif'], body: ['Lato', 'sans-serif'] }
         }
       }
     }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Firebase SDKs (Compat para archivo único) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
-    :root { --bg: #FFFAFC; --fg: #1A1A1A; --accent: #E91E8C; }
+    :root { --bg: #FFFAFC; --fg: #1A1A1A; --accent: #E91E8C; --accent2: #C2185B; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; max-width: 100vw; }
     .font-display { font-family: 'Playfair Display', serif; }
-    .product-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .product-card:active { transform: scale(0.98); }
-    .tab-btn { transition: all 0.2s; border-bottom: 3px solid transparent; cursor: pointer; }
+    .product-card { transition: transform 0.2s; border-radius: 16px; overflow: hidden; background: #fff; }
+    .product-card:active { transform: scale(0.97); }
+    .tab-btn { transition: all 0.3s; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; padding: 10px 16px; font-size: 14px; }
     .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
-    .nav-scrolled { background: rgba(255,250,252,0.95) !important; backdrop-filter: blur(12px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); }
-    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items:
+    .modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-content { background: #fff; border-radius: 24px 24px 0 0; width: 100%; max-height: 90dvh; overflow-y: auto; padding: 24px 20px 40px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+    .modal-overlay.show .modal-content { transform: translateY(0); }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,250,252,0.97); backdrop-filter: blur(12px); border-top: 1px solid #f3e5f5; z-index: 900; padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #6B7280; transition: color 0.2s; padding: 8px 0; background: none; border: none; cursor: pointer; flex: 1; }
+    .bottom-nav button.active { color: #E91E8C; }
+    .bottom-nav button i { font-size: 20px; }
+    .screen { display: none; padding-bottom: 90px; }
+    .screen.active { display: block; }
+    .admin-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #374151; font-size: 15px; font-family: 'Lato', sans-serif; background: #1F2937; color: #f9fafb; }
+    .admin-input:focus { outline: none; border-color: #E91E8C; }
+    .admin-input::placeholder { color: #6B7280; }
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120%); background: #1A1A1A; color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 14px; z-index: 2000; transition: transform 0.4s; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs-scroll::-webkit-scrollbar { display: none; }
+    .img-placeholder { width: 100%; aspect-ratio: 1; object-fit: cover; background: linear-gradient(135deg, #fce4ec, #f3e5f5); }
+    .hero-bg { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 40%, #e91e8c33 100%); }
+    .btn-fuchsia { background: linear-gradient(135deg, #E91E8C, #C2185B); color: #fff; border: none; border-radius: 50px; padding: 14px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
+    .btn-fuchsia:active { transform: scale(0.96); }
+    .cart-badge { position: absolute; top: -4px; right: -6px; background: #E91E8C; color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.4s ease forwards; }
+    .whatsapp-float { position: fixed; bottom: 80px; right: 16px; z-index: 800; width: 56px; height: 56px; border-radius: 50%; background: #25D366; color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.4); cursor: pointer; text-decoration: none; }
+    .delete-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+    .spinner { border: 3px solid #f3e5f5; border-top: 3px solid #E91E8C; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 40px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- CATÁLOGO -->
+  <div id="screenCatalog" class="screen active">
+    <header class="sticky top-0 z-50 bg-blush/95 backdrop-blur-md border-b border-sand px-4 py-3 flex items-center justify-between">
+      <div>
+        <h1 class="font-display text-xl font-bold text-charcoal leading-tight">Ecos de Moda</h1>
+        <p class="text-[11px] text-drift tracking-wider uppercase">Tienda de Regalos</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openSearch()" class="w-10 h-10 rounded-full bg-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
+        <button onclick="switchScreen('screenCart')" class="w-10 h-10 rounded-full bg-sand flex items-center justify-center text-charcoal relative">
+          <i class="fa-solid fa-bag-shopping text-sm"></i>
+          <span id="cartBadge" class="cart-badge" style="display:none;">0</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="hero-bg px-5 pt-8 pb-10">
+      <p class="text-fuchsia font-bold text-xs tracking-widest uppercase mb-2">✨ Nuevo</p>
+      <h2 class="font-display text-3xl font-900 text-charcoal leading-tight mb-2">Regalos que<br>enamoran</h2>
+      <p class="text-drift text-sm mb-5 max-w-[260px]">Encuentra el detalle perfecto para esa persona especial.</p>
+      <button onclick="document.getElementById('catalogSections').scrollIntoView({behavior:'smooth'})" class="btn-fuchsia text-sm"><i class="fa-solid fa-sparkles mr-1"></i> Ver Catálogo</button>
+    </section>
+
+    <div id="searchBar" class="px-4 py-3 bg-white border-b border-sand" style="display:none;">
+      <div class="flex items-center gap-2">
+        <input id="searchInput" type="text" placeholder="Buscar productos..." class="flex-1 px-4 py-3 rounded-full bg-sand text-sm outline-none" oninput="renderProducts()">
+        <button onclick="closeSearch()" class="text-drift"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+    </div>
+
+    <div id="catalogSections" class="tabs-scroll flex gap-1 px-4 pt-4 pb-1 border-b border-sand/50"></div>
+    
+    <div id="loadingSpinner" class="spinner"></div>
+    
+    <div id="productsGrid" class="grid grid-cols-2 gap-3 px-4 pt-4" style="display:none;"></div>
+    <div id="noProductsMsg" class="text-center py-16 px-6" style="display:none;">
+      <i class="fa-solid fa-box-open text-4xl text-sand mb-3"></i>
+      <p class="text-drift text-sm">No hay productos aquí aún</p>
+    </div>
+  </div>
+
+  <!-- CARRITO -->
+  <div id="screenCart" class="screen">
+    <header class="sticky top-0 z-50 bg-blush/95 backdrop-blur-md border-b border-sand px-4 py-3 flex items-center gap-3">
+      <button onclick="switchScreen('screenCatalog')" class="w-10 h-10 rounded-full bg-sand flex items-center justify-center"><i class="fa-solid fa-arrow-left text-sm text-charcoal"></i></button>
+      <h2 class="font-display text-lg font-bold">Mi Carrito</h2>
+    </header>
+    <div id="cartItems" class="px-4 pt-4 space-y-3"></div>
+    <div id="cartEmpty" class="text-center py-20 px-6" style="display:none;">
+      <i class="fa-solid fa-bag-shopping text-5xl text-sand mb-4"></i>
+      <p class="text-drift text-sm mb-4">Tu carrito está vacío</p>
+      <button onclick="switchScreen('screenCatalog')" class="btn-fuchsia text-sm">Ver Catálogo</button>
+    </div>
+    <div id="cartFooter" class="fixed bottom-[70px] left-0 right-0 bg-white border-t border-sand px-5 py-4" style="display:none;">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-drift text-sm">Total</span>
+        <span id="cartTotal" class="font-display text-xl font-bold text-charcoal">$0</span>
+      </div>
+      <button onclick="sendWhatsApp()" class="btn-fuchsia w-full text-center"><i class="fa-brands fa-whatsapp mr-2"></i> Pedir por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="screenAdmin" class="screen" style="background:#111827;">
+    <header class="sticky top-0 z-50 bg-admin/95 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+      <h2 class="font-display text-lg font-bold text-white"><i class="fa-solid fa-lock text-fuchsia mr-2"></i>Admin</h2>
+    </header>
+    <div class="px-4 pt-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-sm">Secciones</h3>
+        <button onclick="openSectionModal()" class="text-fuchsia text-sm font-bold"><i class="fa-solid fa-plus mr-1"></i>Agregar</button>
+      </div>
+      <div id="adminSectionsList" class="space-y-2 mb-6"></div>
+      
+      <hr class="border-gray-800 my-4">
+
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-bold text-sm">Productos</h3>
+        <button onclick="openProductModal()" class="text-fuchsia text-sm font-bold"><i class="fa-solid fa-plus mr-1"></i>Agregar</button>
+      </div>
+      <div id="adminProductsList" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="productModal" class="modal-overlay" onclick="closeProductModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-start mb-4">
+        <span id="modalCategory" class="text-fuchsia text-xs font-bold tracking-wider uppercase"></span>
+        <button onclick="closeProductModal()" class="text-drift text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <img id="modalImg" src="" alt="" class="w-full aspect-square object-cover rounded-2xl mb-4 bg-sand">
+      <h3 id="modalName" class="font-display text-2xl font-bold text-charcoal mb-1"></h3>
+      <p id="modalPrice" class="text-fuchsia font-bold text-lg mb-3"></p>
+      <p id="modalDesc" class="text-drift text-sm leading-relaxed mb-6"></p>
+      <button id="modalAddBtn" class="btn-fuchsia w-full text-center"><i class="fa-solid fa-bag-shopping mr-2"></i> Agregar al carrito</button>
+    </div>
+  </div>
+
+  <div id="sectionModal" class="modal-overlay" onclick="closeSectionModal(event)">
+    <div class="modal-content" style="background:#1F2937;" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-white font-display text-lg font-bold">Nueva Sección</h3>
+        <button onclick="closeSectionModal()" class="text-gray-400 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input id="sectionNameInput" type="text" placeholder="Nombre (ej: Velas)" class="admin-input mb-3">
+      <input id="sectionIconInput" type="text" placeholder="Icono FontAwesome (ej: fa-fire)" class="admin-input mb-6">
+      <button onclick="saveSection()" class="btn-fuchsia w-full text-center">Guardar en Firebase</button>
+    </div>
+  </div>
+
+  <div id="addProductModal" class="modal-overlay" onclick="closeProductAddModal(event)">
+    <div class="modal-content" style="background:#1F2937;" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-white font-display text-lg font-bold">Nuevo Producto</h3>
+        <button onclick="closeProductAddModal()" class="text-gray-400 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <input id="pName" type="text" placeholder="Nombre" class="admin-input mb-3">
+      <input id="pPrice" type="number" placeholder="Precio (sin puntos)" class="admin-input mb-3">
+      <select id="pSection" class="admin-input mb-3"><option value="">Cargando secciones...</option></select>
+      <input id="pImg" type="text" placeholder="URL de imagen" class="admin-input mb-3">
+      <textarea id="pDesc" placeholder="Descripción" class="admin-input mb-6" rows="3" style="resize:none;"></textarea>
+      <button onclick="saveProduct()" class="btn-fuchsia w-full text-center">Guardar en Firebase</button>
+    </div>
+  </div>
+
+  <a href="https://wa.me/5491100000000" target="_blank" class="whatsapp-float" id="waFloat"><i class="fa-brands fa-whatsapp"></i></a>
+
+  <nav class="bottom-nav flex">
+    <button class="active" onclick="switchScreen('screenCatalog')" id="navCatalog"><i class="fa-solid fa-store"></i><span>Catálogo</span></button>
+    <button onclick="switchScreen('screenCart')" id="navCart"><i class="fa-solid fa-bag-shopping"></i><span>Carrito</span></button>
+    <button onclick="switchScreen('screenAdmin')" id="navAdmin"><i class="fa-solid fa-gear"></i><span>Admin</span></button>
+  </nav>
+
+  <script>
+    // ==========================================
+    // CONFIGURACIÓN DE FIREBASE (PEGA TU CONFIG AQUÍ)
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyXXXXXXXXXXXXXXX",
+      authDomain: "TU-PROYECTO.firebaseapp.com",
+      projectId: "TU-PROYECTO",
+      storageBucket: "TU-PROYECTO.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:XXXXXXXXXXXXXXXX"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ==========================================
+    // ESTADO DE LA APP
+    // ==========================================
+    let sections = [];
+    let products = [];
+    let cart = JSON.parse(localStorage.getItem('em_cart') || '[]');
+    let currentSection = 'todos'; // ID especial para la pestaña inicial
+    let unsubscribeSections = null;
+    let unsubscribeProducts = null;
+
+    function saveCart() { localStorage.setItem('em_cart', JSON.stringify(cart)); }
+
+    // ==========================================
+    // TIEMPO REAL CON FIREBASE (ONSNAPSHOT)
+    // ==========================================
+    function initFirebaseListeners() {
+      // Escuchar cambios en Secciones
+      unsubscribeSections = db.collection('sections').onSnapshot(snapshot => {
+        sections = [{ id: 'todos', name: 'Todos', icon: 'fa-border-all' }]; // Fila base
+        snapshot.forEach(doc => {
+          sections.push({ id: doc.id, ...doc.data() });
+        });
+        renderTabs();
+        renderProducts();
+        renderAdmin();
+      }, error => {
+        console.error("Error cargando secciones:", error);
+        showToast("Error al cargar datos. Revisa la consola.");
+      });
+
+      // Escuchar cambios en Productos
+      unsubscribeProducts = db.collection('products').onSnapshot(snapshot => {
+        products = [];
+        snapshot.forEach(doc => {
+          products.push({ id: doc.id, ...doc.data() });
+        });
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('productsGrid').style.display = 'grid';
+        renderProducts();
+        renderAdmin();
+      }, error => {
+        console.error("Error cargando productos:", error);
+      });
+    }
+
+    // ==========================================
+    // NAVEGACIÓN
+    // ==========================================
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+      if (screenId === 'screenCatalog') document.getElementById('navCatalog').classList.add('active');
+      if (screenId === 'screenCart') { document.getElementById('navCart').classList.add('active'); renderCart(); }
+      if (screenId === 'screenAdmin') document.getElementById('navAdmin').classList.add('active'); renderAdmin();
+      document.getElementById('waFloat').style.display = screenId === 'screenAdmin' ? 'none' : 'flex';
+    }
+
+    // ==========================================
+    // CATÁLOGO
+    // ==========================================
+    function renderTabs() {
+      const container = document.getElementById('catalogSections');
+      container.innerHTML = '';
+      sections.forEach(sec => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${currentSection === sec.id ? 'active' : ''}`;
+        btn.innerHTML = `<i class="fa-solid ${sec.icon} mr-1"></i>${sec.name}`;
+        btn.onclick = () => { currentSection = sec.id; renderTabs(); renderProducts(); };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      const noMsg = document.getElementById('noProductsMsg');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      let filtered = currentSection === 'todos' ? products : products.filter(p => p.section === currentSection);
+      
+      const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+      if (q) filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+
+      if (filtered.length === 0) { noMsg.style.display = 'block'; grid.style.display = 'none'; return; }
+      noMsg.style.display = 'none'; grid.style.display = 'grid';
+
+      filtered.forEach((prod, i) => {
+        const sec = sections.find(s => s.id === prod.section);
+        const card = document.createElement('div');
+        card.className = 'product-card fade-up';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.innerHTML = `
+          <img src="${prod.img}" alt="${prod.name}" class="img-placeholder" onerror="this.src='https://picsum.photos/seed/fb${i}/400/400.jpg'">
+          <div class="p-3">
+            <p class="text-[10px] text-fuchsia font-bold uppercase tracking-wider mb-0.5">${sec && sec.id !== 'todos' ? sec.name : ''}</p>
+            <h4 class="font-display text-sm font-bold text-charcoal leading-tight mb-1 line-clamp-2">${prod.name}</h4>
+            <p class="text-fuchsia font-bold text-sm">$${Number(prod.price).toLocaleString('es-CO')}</p>
+          </div>`;
+        card.onclick = () => openProductDetail(prod.id);
+        grid.appendChild(card);
+      });
+    }
+
+    // Búsqueda
+    function openSearch() { document.getElementById('searchBar').style.display = 'block'; document.getElementById('searchInput').focus(); }
+    function closeSearch() { document.getElementById('searchBar').style.display = 'none'; document.getElementById('searchInput').value = ''; renderProducts(); }
+
+    // Detalle
+    function openProductDetail(id) {
+      const prod = products.find(p => p.id === id); if (!prod) return;
+      const sec = sections.find(s => s.id === prod.section);
+      document.getElementById('modalCategory').textContent = sec ? sec.name : '';
+      document.getElementById('modalImg').src = prod.img;
+      document.getElementById('modalName').textContent = prod.name;
+      document.getElementById('modalPrice').textContent = `$${Number(prod.price).toLocaleString('es-CO')}`;
+      document.getElementById('modalDesc').textContent = prod.desc;
+      document.getElementById('modalAddBtn').onclick = () => { addToCart(prod.id); closeProductModal(); };
+      document.getElementById('productModal').classList.add('show'); document.body.style.overflow = 'hidden';
+    }
+    function closeProductModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('productModal').classList.remove('show'); document.body.style.overflow = '';
+    }
+
+    // ==========================================
+    // CARRITO
+    // ==========================================
+    function addToCart(id) { const e = cart.find(c => c.id === id); if (e) e.qty++; else cart.push({ id, qty: 1 }); saveCart(); updateCartBadge(); showToast('Agregado al carrito'); }
+    function removeFromCart(id) { cart = cart.filter(c => c.id !== id); saveCart(); updateCartBadge(); renderCart(); }
+    function changeQty(id, d) { const i = cart.find(c => c.id === id); if (!i) return; i.qty += d; if (i.qty <= 0) { removeFromCart(id); return; } saveCart(); renderCart(); updateCartBadge(); }
+    function updateCartBadge() { const t = cart.reduce((s, c) => s + c.qty, 0); const b = document.getElementById('cartBadge'); if (t > 0) { b.style.display = 'flex'; b.textContent = t; } else b.style.display = 'none'; }
+    
+    function renderCart() {
+      const c = document.getElementById('cartItems'), e = document.getElementById('cartEmpty'), f = document.getElementById('cartFooter');
+      if (cart.length === 0) { c.innerHTML = ''; e.style.display = 'block'; f.style.display = 'none'; return; }
+      e.style.display = 'none'; f.style.display = 'block'; c.innerHTML = ''; let t = 0;
+      cart.forEach(item => {
+        const p = products.find(x => x.id === item.id); if (!p) return; t += p.price * item.qty;
+        c.innerHTML += `<div class="flex gap-3 bg-white rounded-2xl p-3 items-center">
+          <img src="${p.img}" class="w-20 h-20 rounded-xl object-cover bg-sand">
+          <div class="flex-1 min-w-0"><h4 class="font-display text-sm font-bold truncate">${p.name}</h4><p class="text-fuchsia font-bold text-sm">$${Number(p.price).toLocaleString('es-CO')}</p>
+          <div class="flex items-center gap-3 mt-1"><button onclick="changeQty('${p.id}', -1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs"><i class="fa-solid fa-minus"></i></button><span class="text-sm font-bold">${item.qty}</span><button onclick="changeQty('${p.id}', 1)" class="w-7 h-7 rounded-full bg-sand flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></button></div></div>
+          <button onclick="removeFromCart('${p.id}')" class="text-drift p-2"><i class="fa-solid fa-trash-can text-sm"></i></button></div>`;
+      });
+      document.getElementById('cartTotal').textContent = `$${t.toLocaleString('es-CO')}`;
+    }
+
+    function sendWhatsApp() {
+      if (cart.length === 0) return; let m = '¡Hola! Quiero pedir:\n\n', t = 0;
+      cart.forEach(i => { const p = products.find(x => x.id === i.id); if (!p) return; t += p.price * i.qty; m += `• ${p.name} x${i.qty} — $${(p.price*i.qty).toLocaleString('es-CO')}\n`; });
+      m += `\nTotal: $${t.toLocaleString('es-CO')}`;
+      window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(m)}`, '_blank');
+    }
+
+    // ==========================================
+    // ADMIN (FIRESTORE)
+    // ==========================================
+    function renderAdmin() {
+      renderAdminSections(); renderAdminProducts();
+    }
+
+    function renderAdminSections() {
+      const l = document.getElementById('adminSectionsList'); if(!l) return; l.innerHTML = '';
+      sections.forEach(sec => {
+        if (sec.id === 'todos') return; // No mostramos el "Todos" en admin
+        l.innerHTML += `<div class="flex items-center justify-between bg-adminCard rounded-xl px-4 py-3">
+          <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-fuchsia/20 flex items-center justify-center"><i class="fa-solid ${sec.icon} text-fuchsia text-sm"></i></div><span class="text-white text-sm font-medium">${sec.name}</span></div>
+          <button onclick="deleteSection('${sec.id}')" class="text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>`;
+      });
+    }
+
+    function renderAdminProducts() {
+      const l = document.getElementById('adminProductsList'); if(!l) return; l.innerHTML = '';
+      products.forEach(p => {
+        const sec = sections.find(s => s.id === p.section);
+        l.innerHTML += `<div class="bg-adminCard rounded-xl p-3 flex gap-3 items-center relative">
+          <button onclick="deleteProduct('${p.id}')" class="delete-btn"><i class="fa-solid fa-xmark"></i></button>
+          <img src="${p.img}" class="w-16 h-16 rounded-xl object-cover bg-gray-700">
+          <div class="flex-1 min-w-0 pr-6"><h4 class="text-white text-sm font-bold truncate">${p.name}</h4><p class="text-fuchsia text-xs font-bold">$${Number(p.price).toLocaleString('es-CO')}</p><p class="text-gray-500 text-[11px]">${sec ? sec.name : 'Sin sección'}</p></div></div>`;
+      });
+    }
+
+    // Modales de Admin
+    function openSectionModal() { document.getElementById('sectionNameInput').value = ''; document.getElementById('sectionIconInput').value = ''; document.getElementById('sectionModal').classList.add('show'); document.body.style.overflow = 'hidden'; }
+    function closeSectionModal(e) { if (e && e.target !== e.currentTarget) return; document.getElementById('sectionModal').classList.remove('show'); document.body.style.overflow = ''; }
+    
+    function openProductModal() {
+      const sel = document.getElementById('pSection'); sel.innerHTML = '<option value="">Selecciona sección</option>';
+      sections.filter(s => s.id !== 'todos').forEach(s => sel.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+      document.getElementById('pName').value = ''; document.getElementById('pPrice').value = ''; document.getElementById('pImg').value = ''; document.getElementById('pDesc').value = '';
+      document.getElementById('addProductModal').classList.add('show'); document.body.style.overflow = 'hidden';
+    }
+    function closeProductAddModal(e) { if (e && e.target !== e.currentTarget) return; document.getElementById('addProductModal').classList.remove('show'); document.body.style.overflow = ''; }
+
+    // Guardar en Firebase
+    async function saveSection() {
+      const name = document.getElementById('sectionNameInput').value.trim();
+      const icon = document.getElementById('sectionIconInput').value.trim() || 'fa-folder';
+      if (!name) { showToast('Escribe un nombre'); return; }
+      try {
+        await db.collection('sections').add({ name, icon });
+        closeSectionModal(); showToast('Sección guardada en la nube');
+      } catch (e) { showToast('Error al guardar'); console.error(e); }
+    }
+
+    async function saveProduct() {
+      const name = document.getElementById('pName').value.trim();
+      const price = parseInt(document.getElementById('pPrice').value);
+      const section = document.getElementById('pSection').value;
+      const img = document.getElementById('pImg').value.trim();
+      const desc = document.getElementById('pDesc').value.trim();
+      if (!name || !price || !section) { showToast('Completa nombre, precio y sección'); return; }
+      try {
+        await db.collection('products').add({ name, price, section, img: img || `https://picsum.photos/seed/${Date.now()}/400/400.jpg`, desc: desc || '' });
+        closeProductAddModal(); showToast('Producto guardado en la nube');
+      } catch (e) { showToast('Error al guardar'); console.error(e); }
+    }
+
+    // Borrar de Firebase
+    async function deleteSection(id) {
+      if (!confirm('¿Eliminar sección y sus productos?')) return;
+      try {
+        await db.collection('sections').doc(id).delete();
+        // Borrar productos asociados
+        const prods = await db.collection('products').where('section', '==', id).get();
+        const batch = db.batch(); prods.forEach(p => batch.delete(p.ref)); await batch.commit();
+        showToast('Eliminado');
+      } catch (e) { showToast('Error al eliminar'); console.error(e); }
+    }
+
+    async function deleteProduct(id) {
+      try { await db.collection('products').doc(id).delete(); showToast('Producto eliminado'); } catch (e) { showToast('Error'); console.error(e); }
+    }
+
+    // ==========================================
+    // UTILS
+    // ==========================================
+    function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+
+    // ==========================================
+    // INICIO
+    // ==========================================
+    updateCartBadge();
+    initFirebaseListeners(); // Conecta a la base de datos y actualiza la app sola
+  </script>
+</body>
+  </html>
