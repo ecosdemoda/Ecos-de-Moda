@@ -1,0 +1,19 @@
+{
+  "storeName": "Ecos de Moda",
+  "heroSubtitle": "Tienda de Regalos",
+  "heroTitle": "Ecos de Moda",
+  "backgroundColor": "#FFFAFC",
+  "headerColor": "#1A1A1A",
+  "accentColor": "#E91E8C",
+  "whatsappNumber": "53000000",
+  "exchangeRate": 300,
+  "shippingZones": [
+    { "name": "Habana Vieja", "cost": 300 },
+    { "name": "Centro Habana", "cost": 300 },
+    { "name": "Playa", "cost": 500 }
+  ],
+  "sections": [
+    { "id": 1, "name": "Cumpleaños", "icon": "fas fa-birthday-cake", "products": [ { "id": 1, "name": "Set de Velas", "priceCUP": 3000, "quantity": 5, "image": "https://raw.githubusercontent.com/ecosdemoda/Ecos-de-Moda/main/1777058133914.png" } ] },
+    { "id": 2, "name": "Bodas", "icon": "fas fa-ring", "products": [ { "id": 2, "name": "Set de Copas", "priceCUP": 7500, "quantity": 2, "image": "https://picsum.photos/seed/copas05/400/400" } ] }
+  ]
+}
